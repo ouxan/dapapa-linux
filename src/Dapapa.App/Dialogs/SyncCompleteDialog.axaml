@@ -1,0 +1,65 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="Dapapa.App.Dialogs.SyncCompleteDialog"
+        Title="IP Sync Complete" Width="430" SizeToContent="Height" CanResize="False" ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner" WindowDecorations="None"
+        Background="Transparent" TransparencyLevelHint="Transparent">
+    <Border CornerRadius="14" Background="{StaticResource BgCardBrush}" BorderBrush="{StaticResource BorderBrush2}"
+            BorderThickness="1.5" PointerPressed="Root_PointerPressed">
+        <StackPanel Margin="24">
+            <Grid ColumnDefinitions="Auto,*" Margin="0,0,0,16">
+                <Border x:Name="ResultIconBorder" Width="44" Height="44" CornerRadius="12" Background="#1A2D24"
+                        BorderBrush="#2A503C" BorderThickness="1.2" Margin="0,0,14,0" VerticalAlignment="Center">
+                    <Path x:Name="ResultIcon" Data="M 4,12 L 9,17 L 20,6" Stroke="{StaticResource SuccessBrush}" StrokeThickness="2.5"
+                          StrokeLineCap="Round" StrokeJoin="Round" Width="18" Height="18" Stretch="Uniform"
+                          HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Border>
+                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                    <TextBlock x:Name="HeadingText" FontSize="16" FontWeight="Bold"/>
+                    <TextBlock x:Name="SubheadingText" FontSize="12" Foreground="{StaticResource SuccessBrush}" FontWeight="SemiBold"
+                               Margin="0,2,0,0" TextWrapping="Wrap"/>
+                </StackPanel>
+            </Grid>
+
+            <Border Background="{StaticResource BgPanelBrush}" CornerRadius="10" Padding="14" Margin="0,0,0,20"
+                    BorderBrush="{StaticResource BorderBrush2}" BorderThickness="1">
+                <StackPanel>
+                    <Grid ColumnDefinitions="Auto,*" Margin="0,0,0,12">
+                        <Border Width="20" Height="20" Margin="0,0,10,0" VerticalAlignment="Center">
+                            <Path Data="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zM2.05 8a5.97 5.97 0 0 1 1.4-3.75h9.1A5.97 5.97 0 0 1 13.95 8H2.05zm0 1h11.9a5.97 5.97 0 0 1-1.4 3.75h-9.1A5.97 5.97 0 0 1 2.05 9zM8 2.06c.92 1.34 1.54 3.4 1.7 5.44H6.3C6.46 5.46 7.08 3.4 8 2.06zm0 11.88c-.92-1.34-1.54-3.4-1.7-5.44h3.4c-.16 2.04-.78 4.1-1.7 5.44z"
+                                  Fill="White" Width="14" Height="14" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <TextBlock x:Name="ServicesUpdatedText" Grid.Column="1" FontSize="12" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                    </Grid>
+                    <Grid x:Name="DnsFlushedRow" ColumnDefinitions="Auto,*" Margin="0,0,0,12">
+                        <Border Width="20" Height="20" Margin="0,0,10,0" VerticalAlignment="Center">
+                            <Path Data="M9 1L2 9h5l-1 6 7-8H8l1-6z" Fill="White" Width="13" Height="13" Stretch="Uniform"
+                                  HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <TextBlock x:Name="DnsFlushedText" Grid.Column="1" FontSize="12" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                    </Grid>
+                    <Grid x:Name="DnsCacheRow" ColumnDefinitions="Auto,*" Margin="0,0,0,12">
+                        <Border Width="20" Height="20" Margin="0,0,10,0" VerticalAlignment="Center">
+                            <Path Data="M13.65 2.35A7.96 7.96 0 0 0 8 0a8 8 0 1 0 8 8h-2a6 6 0 1 1-1.76-4.24l-2.24 2.24H16V0l-2.35 2.35z"
+                                  Fill="White" Width="13" Height="13" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <TextBlock x:Name="DnsCacheStatusText" Grid.Column="1" FontSize="12" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                    </Grid>
+                    <Grid ColumnDefinitions="Auto,*">
+                        <Panel Width="20" Height="20" Margin="0,0,10,0" VerticalAlignment="Center">
+                            <Ellipse x:Name="TargetStatusLiveDot" Width="9" Height="9" Fill="{StaticResource SuccessBrush}"
+                                     HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <Path x:Name="TargetStatusSavedPath" Data="M13 1H3a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2zm-3 13H6V9h4v5zm3-8H3V3h10v3z"
+                                  Fill="White" Width="13" Height="13" Stretch="Uniform" IsVisible="False"
+                                  HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Panel>
+                        <TextBlock x:Name="TargetStatusText" Grid.Column="1" FontSize="12" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <Button x:Name="OkButton" Theme="{StaticResource AccentButton}" MinWidth="110" Height="36"
+                    HorizontalAlignment="Right" Click="OkButton_Click"/>
+        </StackPanel>
+    </Border>
+</Window>

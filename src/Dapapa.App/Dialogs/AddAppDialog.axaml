@@ -1,0 +1,40 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="Dapapa.App.Dialogs.AddAppDialog"
+        Title="Add domain" Width="400" SizeToContent="Height" CanResize="False" ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner" WindowDecorations="None"
+        Background="Transparent" TransparencyLevelHint="Transparent">
+    <Border CornerRadius="12" Background="{StaticResource BgDarkBrush}" BorderBrush="{StaticResource BorderBrush2}"
+            BorderThickness="1" PointerPressed="Root_PointerPressed">
+        <StackPanel Margin="22">
+            <TextBlock x:Name="HeadingText" FontSize="16" FontWeight="Bold" Margin="0,0,0,4"/>
+            <TextBlock x:Name="DescriptionText" Classes="hint" Margin="0,0,0,16"/>
+
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,14">
+                <RadioButton x:Name="SingleDomainRadio" IsChecked="True" GroupName="InputMode"
+                             IsCheckedChanged="InputMode_Changed" Margin="0,0,18,0"/>
+                <RadioButton x:Name="DomainListRadio" GroupName="InputMode" IsCheckedChanged="InputMode_Changed"/>
+            </StackPanel>
+
+            <TextBlock x:Name="AppNameLabelText" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource TextMutedBrush}" Margin="0,0,0,6"/>
+            <TextBox x:Name="AppNameTextBox" Margin="0,0,0,14"/>
+
+            <TextBlock x:Name="DomainLabelText" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource TextMutedBrush}" Margin="0,0,0,6"/>
+            <TextBox x:Name="DomainTextBox" Margin="0,0,0,8"/>
+            <TextBox x:Name="DomainListTextBox" IsVisible="False" Height="150" AcceptsReturn="True" TextWrapping="NoWrap"
+                     VerticalContentAlignment="Top" ScrollViewer.VerticalScrollBarVisibility="Auto"
+                     ScrollViewer.HorizontalScrollBarVisibility="Auto" Margin="0,0,0,8"/>
+            <TextBlock x:Name="DomainListHintText" IsVisible="False" FontSize="11" TextWrapping="Wrap"
+                       Foreground="{StaticResource TextMutedBrush}" Margin="0,0,0,8"/>
+            <TextBlock x:Name="DomainScopeText" Foreground="{StaticResource TextMutedBrush}" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,12"/>
+            <CheckBox x:Name="DiscoverRelatedCheckBox" IsChecked="False" Margin="0,0,0,20"/>
+            <TextBlock x:Name="InputErrorText" IsVisible="False" Foreground="{StaticResource DangerBrush}"
+                       FontSize="11.5" TextWrapping="Wrap" Margin="0,0,0,12"/>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button x:Name="CancelButtonText" Theme="{StaticResource GhostButton}" MinWidth="90" Margin="0,0,8,0" Click="CancelButton_Click"/>
+                <Button x:Name="ContinueButtonText" Theme="{StaticResource AccentButton}" MinWidth="120" Click="ContinueButton_Click"/>
+            </StackPanel>
+        </StackPanel>
+    </Border>
+</Window>

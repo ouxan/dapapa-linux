@@ -1,0 +1,597 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:models="clr-namespace:Dapapa.Core.Models;assembly=Dapapa.Core"
+        x:Class="Dapapa.App.MainWindow"
+        Title="dapapa" Width="520" Height="640" MinWidth="460" MinHeight="560"
+        Icon="avares://dapapa/Assets/app.png"
+        WindowStartupLocation="CenterScreen"
+        WindowDecorations="None"
+        Background="Transparent"
+        TransparencyLevelHint="Transparent">
+
+    <Window.Styles>
+        <Style Selector="Grid#StatusIndicator.idle Border#StatusDot">
+            <Style.Animations>
+                <Animation Duration="0:0:1.4" IterationCount="Infinite" PlaybackDirection="Alternate" Easing="SineEaseInOut">
+                    <KeyFrame Cue="0%"><Setter Property="Opacity" Value="1"/></KeyFrame>
+                    <KeyFrame Cue="100%"><Setter Property="Opacity" Value="0.65"/></KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+        <Style Selector="Grid#StatusIndicator.idle Ellipse#StatusHalo">
+            <Style.Animations>
+                <Animation Duration="0:0:1.4" IterationCount="Infinite" PlaybackDirection="Alternate" Easing="SineEaseInOut">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="Opacity" Value="0.45"/>
+                        <Setter Property="ScaleTransform.ScaleX" Value="0.92"/>
+                        <Setter Property="ScaleTransform.ScaleY" Value="0.92"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="Opacity" Value="0.1"/>
+                        <Setter Property="ScaleTransform.ScaleX" Value="1.18"/>
+                        <Setter Property="ScaleTransform.ScaleY" Value="1.18"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+        <Style Selector="Grid#StatusIndicator.busy Border#StatusDot">
+            <Style.Animations>
+                <Animation Duration="0:0:0.45" IterationCount="Infinite" PlaybackDirection="Alternate" Easing="SineEaseInOut">
+                    <KeyFrame Cue="0%"><Setter Property="Opacity" Value="1"/></KeyFrame>
+                    <KeyFrame Cue="100%"><Setter Property="Opacity" Value="0.35"/></KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+        <Style Selector="Grid#StatusIndicator.busy Ellipse#StatusHalo">
+            <Style.Animations>
+                <Animation Duration="0:0:0.45" IterationCount="Infinite" PlaybackDirection="Alternate" Easing="SineEaseInOut">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="Opacity" Value="0.7"/>
+                        <Setter Property="ScaleTransform.ScaleX" Value="0.88"/>
+                        <Setter Property="ScaleTransform.ScaleY" Value="0.88"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="Opacity" Value="0.15"/>
+                        <Setter Property="ScaleTransform.ScaleX" Value="1.26"/>
+                        <Setter Property="ScaleTransform.ScaleY" Value="1.26"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+        <Style Selector="Border#SearchBorder:focus-within">
+            <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}"/>
+            <Setter Property="BoxShadow" Value="0 0 10 0 #595865F2"/>
+        </Style>
+        <Style Selector="Border.resize">
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
+    </Window.Styles>
+
+    <Panel>
+        <Border x:Name="RootBorder" CornerRadius="12" Background="{StaticResource BgDarkBrush}"
+                BorderBrush="{StaticResource BorderBrush2}" BorderThickness="1" ClipToBounds="True"
+                Opacity="0" RenderTransform="translateY(16px)">
+            <Border.Transitions>
+                <Transitions>
+                    <DoubleTransition Property="Opacity" Duration="0:0:0.32"/>
+                    <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.32" Easing="CubicEaseOut"/>
+                </Transitions>
+            </Border.Transitions>
+            <Grid RowDefinitions="Auto,Auto,*">
+
+                <Border x:Name="TitleBarBorder" Background="{StaticResource BgPanelBrush}" Padding="20,14"
+                        PointerPressed="TitleBar_PointerPressed">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <StackPanel Orientation="Horizontal" IsHitTestVisible="False">
+                            <Image Source="avares://dapapa/Assets/app.png" Width="34" Height="34"
+                                   RenderOptions.BitmapInterpolationMode="HighQuality" VerticalAlignment="Center"/>
+                            <StackPanel Margin="12,0,0,0" VerticalAlignment="Center">
+                                <TextBlock Text="dapapa" FontSize="17" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}"/>
+                                <TextBlock x:Name="SubtitleText" Text="Uncensored internet" FontSize="11.5" Foreground="{StaticResource TextMutedBrush}"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Top" Margin="0,-6,-8,0">
+                            <Button x:Name="MinimizeButton" Theme="{StaticResource TitleBarButton}" Click="MinimizeButton_Click">
+                                <Path Data="M0,0 L10,0" Stroke="{StaticResource TextPrimaryBrush}" StrokeThickness="1.4"/>
+                            </Button>
+                            <Button x:Name="CloseButton" Theme="{StaticResource TitleBarCloseButton}" Click="CloseButton_Click" Margin="4,0,0,0">
+                                <Path Data="M0,0 L10,10 M0,10 L10,0" Stroke="{StaticResource TextPrimaryBrush}" StrokeThickness="1.4"/>
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <TabControl x:Name="MainTabControl" Grid.Row="1" SelectionChanged="MainTabControl_SelectionChanged">
+
+                    <TabItem x:Name="HomeTabItem" ToolTip.Tip="Home">
+                        <TabItem.Header>
+                            <Viewbox Width="24" Height="24">
+                                <Canvas Width="24" Height="24">
+                                    <Polygon Points="12,3 21,10 21,21 3,21 3,10" Fill="White"/>
+                                </Canvas>
+                            </Viewbox>
+                        </TabItem.Header>
+                    </TabItem>
+
+                    <TabItem x:Name="StatsTabItem" ToolTip.Tip="Statistics">
+                        <TabItem.Header>
+                            <Viewbox Width="24" Height="24">
+                                <Canvas Width="24" Height="24">
+                                    <Path Data="M4 19h16v2H2V3h2v16zm4-3H6v-6h2v6zm5 0h-2V7h2v9zm5 0h-2v-4h2v4z" Fill="White"/>
+                                </Canvas>
+                            </Viewbox>
+                        </TabItem.Header>
+                    </TabItem>
+
+                    <TabItem x:Name="SettingsTabItem" ToolTip.Tip="Settings">
+                        <TabItem.Header>
+                            <Viewbox Width="24" Height="24">
+                                <Canvas Width="24" Height="24">
+                                    <Line StartPoint="4,6" EndPoint="20,6" StrokeThickness="2.2" Stroke="White"/>
+                                    <Ellipse Canvas.Left="6.8" Canvas.Top="3.8" Width="4.4" Height="4.4" Fill="White"/>
+                                    <Line StartPoint="4,12" EndPoint="20,12" StrokeThickness="2.2" Stroke="White"/>
+                                    <Ellipse Canvas.Left="13.8" Canvas.Top="9.8" Width="4.4" Height="4.4" Fill="White"/>
+                                    <Line StartPoint="4,18" EndPoint="20,18" StrokeThickness="2.2" Stroke="White"/>
+                                    <Ellipse Canvas.Left="8.8" Canvas.Top="15.8" Width="4.4" Height="4.4" Fill="White"/>
+                                </Canvas>
+                            </Viewbox>
+                        </TabItem.Header>
+                    </TabItem>
+                </TabControl>
+
+                <!-- Pages stay in the tree and are only hidden, so switching tabs never rebuilds them. -->
+                <Panel x:Name="PagesHost" Grid.Row="2">
+                    <Panel x:Name="HomePage">
+                    <Grid Margin="20">
+                        <Border x:Name="StatusCard" Background="{StaticResource BgCardBrush}" CornerRadius="14"
+                                Padding="28" MaxWidth="380" HorizontalAlignment="Stretch" VerticalAlignment="Center"
+                                BorderThickness="1.5" BorderBrush="{StaticResource BorderBrush2}"
+                                BoxShadow="{StaticResource CardShadow}">
+                            <Border.Transitions>
+                                <Transitions>
+                                    <BrushTransition Property="BorderBrush" Duration="0:0:0.28" Easing="QuadraticEaseOut"/>
+                                </Transitions>
+                            </Border.Transitions>
+                            <StackPanel HorizontalAlignment="Center">
+                                <Grid x:Name="StatusIndicator" Width="46" Height="46" Margin="0,0,0,10" HorizontalAlignment="Center">
+                                    <Ellipse x:Name="StatusHalo" Width="44" Height="44" StrokeThickness="2" Opacity="0.35"
+                                             Stroke="{StaticResource DangerBrush}"
+                                             HorizontalAlignment="Center" VerticalAlignment="Center">
+                                        <Ellipse.RenderTransform>
+                                            <ScaleTransform/>
+                                        </Ellipse.RenderTransform>
+                                        <Ellipse.Transitions>
+                                            <Transitions>
+                                                <BrushTransition Property="Stroke" Duration="0:0:0.28" Easing="QuadraticEaseOut"/>
+                                            </Transitions>
+                                        </Ellipse.Transitions>
+                                    </Ellipse>
+                                    <Border x:Name="StatusDot" Width="16" Height="16" CornerRadius="8"
+                                            Background="{StaticResource DangerBrush}"
+                                            HorizontalAlignment="Center" VerticalAlignment="Center">
+                                        <Border.Transitions>
+                                            <Transitions>
+                                                <BrushTransition Property="Background" Duration="0:0:0.28" Easing="QuadraticEaseOut"/>
+                                            </Transitions>
+                                        </Border.Transitions>
+                                    </Border>
+                                </Grid>
+                                <TextBlock x:Name="StatusText" Text="Protection off" FontSize="20" FontWeight="Bold"
+                                           Foreground="{StaticResource TextPrimaryBrush}" HorizontalAlignment="Center"/>
+                                <TextBlock x:Name="StatusSubText" Text="Start DPI protection below" FontSize="12"
+                                           Foreground="{StaticResource TextMutedBrush}" Margin="0,4,0,18"
+                                           HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center"/>
+                                <Button x:Name="ToggleConnectionButton" Content="CONNECT" MinWidth="220" Height="46"
+                                        Theme="{StaticResource AccentButton}" FontSize="15" HorizontalAlignment="Center"
+                                        Click="ToggleConnectionButton_Click"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                    </Panel>
+                    <Panel x:Name="StatsPage" IsVisible="False">
+                    <ScrollViewer x:Name="StatsScrollViewer" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                        <StackPanel Margin="20">
+                            <TextBlock x:Name="StatsSectionTitleText" Text="Traffic &amp; Data Usage" Classes="section" Margin="0,0,0,4"/>
+                            <TextBlock x:Name="StatsDescriptionText" Classes="hint" Margin="0,0,0,16"/>
+
+                            <Grid ColumnDefinitions="*,12,*" Margin="0,0,0,16">
+                                <Border Classes="card" Padding="14,16">
+                                    <StackPanel>
+                                        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                                            <Border Width="28" Height="28" CornerRadius="14" Background="#203BA55D" Margin="0,0,10,0">
+                                                <Path Data="M12 4v12m0 0l-5-5m5 5l5-5" Stroke="{StaticResource SuccessBrush}" StrokeThickness="2"
+                                                      StrokeLineCap="Round" Stretch="Uniform" Width="13" Height="13"
+                                                      HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                            <TextBlock x:Name="DownloadSpeedLabelText" FontSize="12" FontWeight="SemiBold"
+                                                       Foreground="{StaticResource TextMutedBrush}" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                        <TextBlock x:Name="DownloadSpeedValueText" Text="0.0 KB/s" FontSize="20" FontWeight="Bold"/>
+                                        <TextBlock x:Name="CurrentDownloadSubtext" FontSize="11" Foreground="{StaticResource TextMutedBrush}" Margin="0,4,0,0"/>
+                                    </StackPanel>
+                                </Border>
+                                <Border Grid.Column="2" Classes="card" Padding="14,16">
+                                    <StackPanel>
+                                        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                                            <Border Width="28" Height="28" CornerRadius="14" Background="#205865F2" Margin="0,0,10,0">
+                                                <Path Data="M12 20V8m0 0l-5 5m5-5l5 5" Stroke="{StaticResource AccentBrush}" StrokeThickness="2"
+                                                      StrokeLineCap="Round" Stretch="Uniform" Width="13" Height="13"
+                                                      HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                            <TextBlock x:Name="UploadSpeedLabelText" FontSize="12" FontWeight="SemiBold"
+                                                       Foreground="{StaticResource TextMutedBrush}" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                        <TextBlock x:Name="UploadSpeedValueText" Text="0.0 KB/s" FontSize="20" FontWeight="Bold"/>
+                                        <TextBlock x:Name="CurrentUploadSubtext" FontSize="11" Foreground="{StaticResource TextMutedBrush}" Margin="0,4,0,0"/>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+
+                            <Border Classes="card" Padding="14,12" Margin="0,0,0,16">
+                                <StackPanel>
+                                    <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,10">
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                            <TextBlock x:Name="ChartHeaderText" FontSize="12" FontWeight="Bold" Margin="0,0,12,0"/>
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,8,0">
+                                                <Ellipse Width="6" Height="6" Fill="{StaticResource SuccessBrush}" Margin="0,0,4,0"/>
+                                                <TextBlock x:Name="ChartDownloadLegendText" Text="DL" FontSize="10.5" FontWeight="SemiBold" Foreground="{StaticResource SuccessBrush}"/>
+                                            </StackPanel>
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                                <Ellipse Width="6" Height="6" Fill="{StaticResource AccentBrush}" Margin="0,0,4,0"/>
+                                                <TextBlock x:Name="ChartUploadLegendText" Text="UL" FontSize="10.5" FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}"/>
+                                            </StackPanel>
+                                        </StackPanel>
+                                        <TextBlock x:Name="ChartPeakText" Grid.Column="1" FontSize="11"
+                                                   Foreground="{StaticResource TextMutedBrush}" VerticalAlignment="Center"/>
+                                    </Grid>
+                                    <Border Background="{StaticResource BgPanelBrush}" CornerRadius="6" Height="80" ClipToBounds="True">
+                                        <Panel x:Name="ChartContainer" ClipToBounds="True" SizeChanged="ChartContainer_SizeChanged">
+                                            <Line StartPoint="0,26" EndPoint="1000,26" Stroke="{StaticResource BorderBrush2}" StrokeThickness="0.6" StrokeDashArray="3,3"/>
+                                            <Line StartPoint="0,53" EndPoint="1000,53" Stroke="{StaticResource BorderBrush2}" StrokeThickness="0.6" StrokeDashArray="3,3"/>
+                                            <Polygon x:Name="DownloadPolygon" Fill="#183BA55D"/>
+                                            <Polyline x:Name="DownloadPolyline" Stroke="{StaticResource SuccessBrush}" StrokeThickness="1.8" StrokeJoin="Round"/>
+                                            <Polygon x:Name="UploadPolygon" Fill="#185865F2"/>
+                                            <Polyline x:Name="UploadPolyline" Stroke="{StaticResource AccentBrush}" StrokeThickness="1.8" StrokeJoin="Round"/>
+                                        </Panel>
+                                    </Border>
+                                </StackPanel>
+                            </Border>
+
+                            <TextBlock x:Name="DpiStatsHeaderText" Classes="section"/>
+                            <Grid ColumnDefinitions="*,12,*" Margin="0,0,0,16">
+                                <Border Classes="card" Padding="14,16">
+                                    <StackPanel>
+                                        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                                            <Border Width="28" Height="28" CornerRadius="14" Background="#205865F2" Margin="0,0,10,0">
+                                                <Path Data="M4 12l5 5L20 7" Stroke="{StaticResource AccentBrush}" StrokeThickness="2"
+                                                      StrokeLineCap="Round" Stretch="Uniform" Width="13" Height="13"
+                                                      HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                            <TextBlock x:Name="BypassedPacketsLabelText" FontSize="12" FontWeight="SemiBold"
+                                                       Foreground="{StaticResource TextMutedBrush}" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                        <TextBlock x:Name="BypassedPacketsValueText" Text="0 packets" FontSize="20" FontWeight="Bold"/>
+                                        <TextBlock x:Name="BypassedPacketsSubtext" FontSize="11" Foreground="{StaticResource TextMutedBrush}" Margin="0,4,0,0"/>
+                                    </StackPanel>
+                                </Border>
+                                <Border Grid.Column="2" Classes="card" Padding="14,16">
+                                    <StackPanel>
+                                        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                                            <Border Width="28" Height="28" CornerRadius="14" Background="#203BA55D" Margin="0,0,10,0">
+                                                <Path Data="M12 2L4 7v6c0 5.5 3.8 10.7 8 12 4.2-1.3 8-6.5 8-12V7l-8-5z" Stroke="{StaticResource SuccessBrush}" StrokeThickness="1.8"
+                                                      StrokeLineCap="Round" Stretch="Uniform" Width="13" Height="13"
+                                                      HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                            <TextBlock x:Name="SafeDnsLabelText" FontSize="12" FontWeight="SemiBold"
+                                                       Foreground="{StaticResource TextMutedBrush}" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                        <TextBlock x:Name="SafeDnsValueText" Text="0 queries" FontSize="20" FontWeight="Bold"/>
+                                        <TextBlock x:Name="SafeDnsSubtext" FontSize="11" Foreground="{StaticResource TextMutedBrush}" Margin="0,4,0,0"/>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+
+                            <TextBlock x:Name="DataCounterHeaderText" Classes="section"/>
+                            <Border Classes="card" Margin="0,0,0,16">
+                                <StackPanel>
+                                    <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,14">
+                                        <StackPanel>
+                                            <TextBlock x:Name="TotalTransferredLabelText" FontSize="12" Foreground="{StaticResource TextMutedBrush}" Margin="0,0,0,4"/>
+                                            <TextBlock x:Name="TotalTransferredValueText" Text="0.0 MB" FontSize="26" FontWeight="Bold"/>
+                                        </StackPanel>
+                                        <Border Grid.Column="1" CornerRadius="8" Background="{StaticResource BgPanelBrush}" Padding="10,6" VerticalAlignment="Center">
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                                <Ellipse x:Name="StatsLiveDot" Width="7" Height="7" Fill="{StaticResource SuccessBrush}" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                                <TextBlock x:Name="StatsLiveText" Text="LIVE" FontSize="10.5" FontWeight="Bold" Foreground="{StaticResource SuccessBrush}" VerticalAlignment="Center"/>
+                                            </StackPanel>
+                                        </Border>
+                                    </Grid>
+                                    <Border Height="1" Background="{StaticResource BorderBrush2}" Margin="0,0,0,14"/>
+                                    <Grid ColumnDefinitions="*,*">
+                                        <StackPanel>
+                                            <TextBlock x:Name="ReceivedLabelText" FontSize="11.5" Foreground="{StaticResource TextMutedBrush}"/>
+                                            <TextBlock x:Name="SessionReceivedValueText" Text="0.0 MB" FontSize="15" FontWeight="SemiBold" Margin="0,2,0,0"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="1">
+                                            <TextBlock x:Name="SentLabelText" FontSize="11.5" Foreground="{StaticResource TextMutedBrush}"/>
+                                            <TextBlock x:Name="SessionSentValueText" Text="0.0 MB" FontSize="15" FontWeight="SemiBold" Margin="0,2,0,0"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
+                            <TextBlock x:Name="SessionInfoHeaderText" Classes="section"/>
+                            <Border Classes="card" Margin="0,0,0,16">
+                                <StackPanel>
+                                    <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,10">
+                                        <TextBlock x:Name="SessionStatusLabelText" FontSize="12.5" Foreground="{StaticResource TextMutedBrush}"/>
+                                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                            <Ellipse x:Name="SessionStatusDot" Width="7" Height="7" Fill="{StaticResource DangerBrush}" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                            <TextBlock x:Name="SessionStatusValueText" FontSize="12.5" FontWeight="SemiBold"/>
+                                        </StackPanel>
+                                    </Grid>
+                                    <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,10">
+                                        <TextBlock x:Name="SessionUptimeLabelText" FontSize="12.5" Foreground="{StaticResource TextMutedBrush}"/>
+                                        <TextBlock x:Name="SessionUptimeValueText" Grid.Column="1" Text="00:00" FontSize="12.5" FontWeight="SemiBold"/>
+                                    </Grid>
+                                    <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,10">
+                                        <TextBlock x:Name="ProtectedTargetsLabelText" FontSize="12.5" Foreground="{StaticResource TextMutedBrush}"/>
+                                        <TextBlock x:Name="ProtectedTargetsValueText" Grid.Column="1" FontSize="12.5" FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}"/>
+                                    </Grid>
+                                    <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,14">
+                                        <TextBlock x:Name="AdapterLabelText" FontSize="12.5" Foreground="{StaticResource TextMutedBrush}"/>
+                                        <TextBlock x:Name="AdapterValueText" Grid.Column="1" FontSize="12.5" FontWeight="SemiBold"/>
+                                    </Grid>
+                                    <Button x:Name="ResetStatsButton" Theme="{StaticResource GhostButton}" HorizontalAlignment="Right"
+                                            Padding="12,6" FontSize="12" Click="ResetStatsButton_Click">
+                                        <TextBlock x:Name="ResetStatsButtonText" VerticalAlignment="Center"/>
+                                    </Button>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
+                    </Panel>
+                    <Panel x:Name="SettingsPage" IsVisible="False">
+                    <ScrollViewer x:Name="SettingsScrollViewer" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                        <StackPanel Margin="20">
+
+                            <TextBlock x:Name="GeneralHeaderText" Classes="section"/>
+                            <Border Classes="card" Margin="0,0,0,20">
+                                <StackPanel>
+                                    <CheckBox x:Name="RunOnStartupCheckBox" Margin="0,0,0,10" IsCheckedChanged="SettingCheckBox_Changed"/>
+                                    <CheckBox x:Name="StartMinimizedCheckBox" Margin="0,0,0,10" IsCheckedChanged="SettingCheckBox_Changed"/>
+                                    <CheckBox x:Name="MinimizeToTrayCheckBox" Margin="0,0,0,10" IsCheckedChanged="SettingCheckBox_Changed"/>
+                                    <CheckBox x:Name="AutoConnectCheckBox" Margin="0,0,0,10" IsCheckedChanged="SettingCheckBox_Changed"/>
+                                    <CheckBox x:Name="ConnectionWatchdogCheckBox" Margin="0,0,0,14" IsCheckedChanged="SettingCheckBox_Changed"/>
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <TextBlock x:Name="LanguageLabelText" VerticalAlignment="Center" FontSize="13"/>
+                                        <ComboBox x:Name="LanguageComboBox" Grid.Column="1" MinWidth="140"
+                                                  SelectionChanged="LanguageComboBox_SelectionChanged">
+                                            <ComboBoxItem Content="English"/>
+                                            <ComboBoxItem Content="Türkçe"/>
+                                        </ComboBox>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
+                            <TextBlock x:Name="DohSettingsHeaderText" Classes="section"/>
+                            <Border Classes="card" Margin="0,0,0,20">
+                                <StackPanel>
+                                    <ComboBox x:Name="DohProviderComboBox" SelectionChanged="DohProvider_SelectionChanged"/>
+                                    <TextBlock x:Name="DohProviderDescriptionText" Classes="hint" Margin="0,8,0,0"/>
+                                    <TextBlock x:Name="DohSettingsHintText" Classes="hint" Margin="0,8,0,0"/>
+                                </StackPanel>
+                            </Border>
+
+                            <TextBlock x:Name="DpiSettingsHeaderText" Classes="section"/>
+                            <Border Classes="card" Margin="0,0,0,20">
+                                <StackPanel>
+                                    <ComboBox x:Name="DpiModeComboBox" SelectionChanged="DpiMode_SelectionChanged">
+                                        <ComboBoxItem x:Name="DpiStandardModeItem" Content="Standard"/>
+                                        <ComboBoxItem x:Name="DpiCustomModeItem" Content="Custom"/>
+                                    </ComboBox>
+                                    <TextBlock x:Name="DpiModeHintText" Classes="hint" Margin="0,8,0,0"/>
+                                    <StackPanel x:Name="DpiCustomPanel" IsVisible="False" Margin="0,14,0,0">
+                                        <CheckBox x:Name="DpiTcpFragmentationCheckBox" Margin="0,0,0,10" IsCheckedChanged="DpiSetting_Changed"/>
+                                        <StackPanel x:Name="DpiTcpOptionsPanel" Margin="18,0,0,12">
+                                            <CheckBox x:Name="DpiReverseSegmentsCheckBox" Margin="0,0,0,10" IsCheckedChanged="DpiSetting_Changed"/>
+                                            <CheckBox x:Name="DpiSplitAtHostnameCheckBox" IsCheckedChanged="DpiSetting_Changed"/>
+                                            <CheckBox x:Name="DpiMultiSplitCheckBox" Margin="0,0,0,10" IsCheckedChanged="DpiSetting_Changed"/>
+                                            <TextBlock x:Name="DpiSplitSizeLabelText" Classes="label"/>
+                                            <TextBox x:Name="DpiSplitSizeTextBox" MaxLength="4" Margin="0,0,0,12" LostFocus="DpiSetting_Changed" KeyDown="DpiInput_KeyDown"/>
+                                            <TextBlock x:Name="DpiSplitPositionsLabelText" Classes="label"/>
+                                            <TextBox x:Name="DpiSplitPositionsTextBox" MaxLength="160" Margin="0,0,0,12" LostFocus="DpiSetting_Changed" KeyDown="DpiInput_KeyDown"/>
+                                        </StackPanel>
+                                        <CheckBox x:Name="DpiFakeWrongChecksumCheckBox" Margin="0,0,0,12" IsCheckedChanged="DpiSetting_Changed"/>
+                                        <Expander x:Name="DpiFakeAdvancedExpander" Margin="0,0,0,12">
+                                            <StackPanel Margin="0,10,0,0">
+                                                <CheckBox x:Name="DpiFakeMixSegmentsCheckBox" Margin="0,0,0,10" IsCheckedChanged="DpiSetting_Changed"/>
+                                                <CheckBox x:Name="DpiFakeWrongSequenceCheckBox" Margin="0,0,0,10" IsCheckedChanged="DpiSetting_Changed"/>
+                                                <CheckBox x:Name="DpiFakeLowTtlCheckBox" Margin="0,0,0,10" IsCheckedChanged="DpiSetting_Changed"/>
+                                                <CheckBox x:Name="DpiFakeAutoTtlCheckBox" Margin="0,0,0,10" IsCheckedChanged="DpiSetting_Changed"/>
+                                                <CheckBox x:Name="DpiFakeMd5SignatureCheckBox" Margin="0,0,0,10" IsCheckedChanged="DpiSetting_Changed"/>
+                                                <CheckBox x:Name="DpiFakeTimestampCheckBox" Margin="0,0,0,10" IsCheckedChanged="DpiSetting_Changed"/>
+                                                <CheckBox x:Name="DpiFakeDataNoAckCheckBox" Margin="0,0,0,10" IsCheckedChanged="DpiSetting_Changed"/>
+                                                <CheckBox x:Name="DpiFakeRandomizeTlsCheckBox" Margin="0,0,0,10" IsCheckedChanged="DpiSetting_Changed"/>
+                                                <TextBlock x:Name="DpiFakeTtlLabelText" Classes="label"/>
+                                                <TextBox x:Name="DpiFakeTtlTextBox" MaxLength="2" Margin="0,0,0,12" LostFocus="DpiSetting_Changed" KeyDown="DpiInput_KeyDown"/>
+                                                <TextBlock x:Name="DpiFakeRepeatsLabelText" Classes="label"/>
+                                                <TextBox x:Name="DpiFakeRepeatsTextBox" MaxLength="1" Margin="0,0,0,12" LostFocus="DpiSetting_Changed" KeyDown="DpiInput_KeyDown"/>
+                                                <TextBlock x:Name="DpiFakeHostnameLabelText" Classes="label"/>
+                                                <TextBox x:Name="DpiFakeHostnameTextBox" MaxLength="253" Margin="0,0,0,12" LostFocus="DpiSetting_Changed" KeyDown="DpiInput_KeyDown"/>
+                                            </StackPanel>
+                                        </Expander>
+                                        <TextBlock x:Name="DpiHttpMethodsLabelText" Classes="hint" Margin="0,0,0,10"/>
+                                        <CheckBox x:Name="DpiHttpHostHeaderCaseCheckBox" Margin="0,0,0,10" IsCheckedChanged="DpiSetting_Changed"/>
+                                        <CheckBox x:Name="DpiHttpHostDomainCaseCheckBox" Margin="0,0,0,10" IsCheckedChanged="DpiSetting_Changed"/>
+                                        <CheckBox x:Name="DpiHttpHostRemoveSpaceCheckBox" Margin="0,0,0,14" IsCheckedChanged="DpiSetting_Changed"/>
+                                        <CheckBox x:Name="DpiHttpMethodSpaceCheckBox" Margin="0,0,0,10" IsCheckedChanged="DpiSetting_Changed"/>
+                                        <CheckBox x:Name="DpiHttpMethodEolCheckBox" Margin="0,0,0,10" IsCheckedChanged="DpiSetting_Changed"/>
+                                        <CheckBox x:Name="DpiHttpHostTabCheckBox" Margin="0,0,0,10" IsCheckedChanged="DpiSetting_Changed"/>
+                                        <TextBlock x:Name="DpiMaxPayloadLabelText" Classes="label"/>
+                                        <TextBox x:Name="DpiMaxPayloadTextBox" MaxLength="5" Margin="0,0,0,12" LostFocus="DpiSetting_Changed" KeyDown="DpiInput_KeyDown"/>
+                                        <CheckBox x:Name="DpiBlockQuicCheckBox" IsCheckedChanged="DpiSetting_Changed"/>
+                                        <Expander x:Name="DpiUdpExpander" Margin="0,12,0,0">
+                                            <StackPanel Margin="0,10,0,0">
+                                                <TextBlock x:Name="DpiUdpScopeText" Classes="hint" Margin="0,0,0,12"/>
+                                                <CheckBox x:Name="DpiUdpFakeWrongChecksumCheckBox" Margin="0,0,0,10" IsCheckedChanged="DpiSetting_Changed"/>
+                                                <CheckBox x:Name="DpiUdpFakeLowTtlCheckBox" Margin="0,0,0,10" IsCheckedChanged="DpiSetting_Changed"/>
+                                                <TextBlock x:Name="DpiUdpFakeTtlLabelText" Classes="label"/>
+                                                <TextBox x:Name="DpiUdpFakeTtlTextBox" MaxLength="2" Margin="0,0,0,12" LostFocus="DpiSetting_Changed" KeyDown="DpiInput_KeyDown"/>
+                                                <TextBlock x:Name="DpiUdpFakeRepeatsLabelText" Classes="label"/>
+                                                <TextBox x:Name="DpiUdpFakeRepeatsTextBox" MaxLength="1" Margin="0,0,0,12" LostFocus="DpiSetting_Changed" KeyDown="DpiInput_KeyDown"/>
+                                                <CheckBox x:Name="DpiUdpIpFragmentationCheckBox" Margin="0,0,0,10" IsCheckedChanged="DpiSetting_Changed"/>
+                                                <StackPanel x:Name="DpiUdpFragmentPanel" Margin="18,0,0,12">
+                                                    <CheckBox x:Name="DpiUdpReverseFragmentsCheckBox" Margin="0,0,0,10" IsCheckedChanged="DpiSetting_Changed"/>
+                                                    <TextBlock x:Name="DpiUdpFragmentSizeLabelText" Classes="label"/>
+                                                    <TextBox x:Name="DpiUdpFragmentSizeTextBox" MaxLength="4" LostFocus="DpiSetting_Changed" KeyDown="DpiInput_KeyDown"/>
+                                                </StackPanel>
+                                                <CheckBox x:Name="DpiUdpLengthPaddingCheckBox" Margin="0,0,0,10" IsCheckedChanged="DpiSetting_Changed"/>
+                                                <TextBlock x:Name="DpiUdpPaddingSizeLabelText" Classes="label"/>
+                                                <TextBox x:Name="DpiUdpPaddingSizeTextBox" MaxLength="2" Margin="0,0,0,12" LostFocus="DpiSetting_Changed" KeyDown="DpiInput_KeyDown"/>
+                                                <TextBlock x:Name="DpiUdpPacketLimitLabelText" Classes="label"/>
+                                                <TextBox x:Name="DpiUdpPacketLimitTextBox" MaxLength="2" Margin="0,0,0,12" LostFocus="DpiSetting_Changed" KeyDown="DpiInput_KeyDown"/>
+                                                <TextBlock x:Name="DpiUdpProtocolsLabelText" Classes="label" Margin="0,0,0,8"/>
+                                                <CheckBox x:Name="DpiUdpQuicInitialCheckBox" Margin="0,0,0,10" IsCheckedChanged="DpiSetting_Changed"/>
+                                                <CheckBox x:Name="DpiUdpStunCheckBox" Margin="0,0,0,10" IsCheckedChanged="DpiSetting_Changed"/>
+                                                <CheckBox x:Name="DpiUdpWireGuardCheckBox" Margin="0,0,0,10" IsCheckedChanged="DpiSetting_Changed"/>
+                                                <CheckBox x:Name="DpiUdpDiscordDiscoveryCheckBox" Margin="0,0,0,10" IsCheckedChanged="DpiSetting_Changed"/>
+                                                <CheckBox x:Name="DpiUdpUnknownCheckBox" Margin="0,0,0,10" IsCheckedChanged="DpiSetting_Changed"/>
+                                                <TextBlock x:Name="DpiUdpQuicBlockedText" Classes="hint"/>
+                                            </StackPanel>
+                                        </Expander>
+                                        <TextBlock x:Name="DpiValidationText" Foreground="{StaticResource DangerBrush}" TextWrapping="Wrap" IsVisible="False" Margin="0,10,0,0"/>
+                                        <TextBlock x:Name="DpiCustomCompatibilityText" Classes="hint" Margin="0,12,0,0"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+
+                            <TextBlock x:Name="LatencyHeaderText" Classes="section"/>
+                            <Border Classes="card" Margin="0,0,0,20">
+                                <Grid ColumnDefinitions="Auto,*,Auto">
+                                    <Border Width="40" Height="40" CornerRadius="20" Background="{StaticResource BgPanelBrush}"
+                                            VerticalAlignment="Center" Margin="0,0,14,0">
+                                        <Ellipse x:Name="LatencyIndicatorDot" Width="12" Height="12" Fill="{StaticResource TextMutedBrush}"
+                                                 HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                            <TextBlock x:Name="PingValueText" Text="-- ms" FontSize="18" FontWeight="Bold" VerticalAlignment="Center"/>
+                                            <Border x:Name="PingBadge" CornerRadius="4" Background="#253BA55D" Padding="6,2" Margin="10,0,0,0"
+                                                    VerticalAlignment="Center" IsVisible="False">
+                                                <TextBlock x:Name="PingQualityText" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource SuccessBrush}"/>
+                                            </Border>
+                                        </StackPanel>
+                                        <TextBlock x:Name="PingTargetText" Classes="hint" Margin="0,2,8,0"/>
+                                    </StackPanel>
+                                    <Border Grid.Column="2" CornerRadius="12" Background="{StaticResource BgPanelBrush}" Padding="8,4" VerticalAlignment="Center">
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                            <Ellipse Width="6" Height="6" Fill="{StaticResource AccentBrush}" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                            <TextBlock x:Name="PingLiveBadgeText" Text="LIVE" FontSize="10" FontWeight="Bold" Foreground="{StaticResource AccentBrush}" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Border>
+                                </Grid>
+                            </Border>
+
+                            <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,8">
+                                <TextBlock x:Name="TrafficHeaderText" Classes="section" Margin="0" VerticalAlignment="Center"/>
+                                <Button x:Name="SyncIpsButton" Grid.Column="1" Theme="{StaticResource GhostButton}"
+                                        Padding="8,3.5" FontSize="11" Click="SyncIpsButton_Click">
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                        <Path x:Name="SyncIconPath" Fill="{StaticResource AccentBrush}" Width="11" Height="11" Stretch="Uniform" Margin="0,0,5,0"
+                                              Data="M 17.65,6.35 C 16.2,4.9 14.21,4 12,4 C 7.58,4 4.01,7.58 4.01,12 C 4.01,16.42 7.58,20 12,20 C 15.73,20 18.84,17.45 19.73,14 L 17.65,14 C 16.83,16.33 14.61,18 12,18 C 8.69,18 6,15.31 6,12 C 6,8.69 8.69,6 12,6 C 13.66,6 15.14,6.69 16.22,7.78 L 13,11 L 20,11 L 20,4 L 17.65,6.35 Z"/>
+                                        <TextBlock x:Name="SyncIpsButtonText" VerticalAlignment="Center" FontWeight="SemiBold"/>
+                                    </StackPanel>
+                                </Button>
+                            </Grid>
+
+                            <Border Classes="card" Margin="0,0,0,20">
+                                <StackPanel>
+                                    <Border x:Name="SearchBorder" Background="{StaticResource BgPanelBrush}" CornerRadius="8" Padding="10,7"
+                                            BorderThickness="1" BorderBrush="{StaticResource BorderBrush2}" Margin="0,0,0,10">
+                                        <Grid ColumnDefinitions="Auto,*,Auto">
+                                            <Path Margin="2,0,8,0" VerticalAlignment="Center"
+                                                  Data="M 7,2 A 5,5 0 1,1 2,7 A 5,5 0 0,1 7,2 M 10.5,10.5 L 14,14"
+                                                  Stroke="{StaticResource TextMutedBrush}" StrokeThickness="1.8" StrokeLineCap="Round"
+                                                  Width="14" Height="14" Stretch="Uniform"/>
+                                            <TextBox x:Name="CatalogSearchTextBox" Grid.Column="1" Classes="bare" VerticalAlignment="Center"
+                                                     TextChanged="CatalogSearchTextBox_TextChanged"/>
+                                            <TextBlock x:Name="CatalogSearchPlaceholder" Grid.Column="1" Foreground="{StaticResource TextMutedBrush}"
+                                                       FontSize="12" VerticalAlignment="Center" IsHitTestVisible="False" Margin="2,0,0,0"/>
+                                            <Button x:Name="ClearSearchButton" Grid.Column="2" Theme="{StaticResource GhostButton}"
+                                                    Padding="6,2" IsVisible="False" Click="ClearSearchButton_Click">
+                                                <Path Data="M0,0 L8,8 M0,8 L8,0" Stroke="{StaticResource TextPrimaryBrush}" StrokeThickness="1.4"
+                                                      Width="8" Height="8" Margin="0,3"/>
+                                            </Button>
+                                        </Grid>
+                                    </Border>
+
+                                    <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,10">
+                                        <TextBlock x:Name="ActiveServicesCountText" FontSize="11.5" Foreground="{StaticResource TextMutedBrush}"
+                                                   TextTrimming="CharacterEllipsis" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                        <Button x:Name="AddCustomAppButton" Grid.Column="1" Theme="{StaticResource GhostButton}"
+                                                Padding="6,3.5" FontSize="11" Click="AddCustomAppButton_Click"/>
+                                    </Grid>
+
+                                    <ListBox x:Name="AppsItemsControl" MaxHeight="380" Margin="0,0,0,12" Background="Transparent"
+                                             BorderThickness="0" Padding="0" ItemContainerTheme="{StaticResource PlainListItem}"
+                                             ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto">
+                                        <ListBox.ItemTemplate>
+                                            <DataTemplate x:DataType="models:ProtectedApp">
+                                                <Border Classes="catalogCard">
+                                                    <Grid ColumnDefinitions="Auto,*,Auto,Auto">
+                                                        <Border Width="36" Height="36" CornerRadius="8" Background="{StaticResource BgCardBrush}"
+                                                                Margin="0,0,12,0" BorderBrush="{StaticResource BorderBrush2}" BorderThickness="1"
+                                                                VerticalAlignment="Center">
+                                                            <Panel Width="20" Height="20">
+                                                                <Ellipse Stroke="{StaticResource AccentBrush}" StrokeThickness="1.6"/>
+                                                                <Ellipse Width="9" Height="9" Stroke="{StaticResource AccentBrush}" StrokeThickness="1.6"/>
+                                                            </Panel>
+                                                        </Border>
+                                                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,8,0">
+                                                            <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="13" TextTrimming="CharacterEllipsis"/>
+                                                            <TextBlock Text="{Binding SubtitleText}" FontSize="11" Foreground="{StaticResource TextMutedBrush}"
+                                                                       Margin="0,2,0,0" TextTrimming="CharacterEllipsis"/>
+                                                        </StackPanel>
+                                                        <CheckBox Grid.Column="2" Theme="{StaticResource ToggleSwitch}"
+                                                                  IsChecked="{Binding Enabled, Mode=OneWay}" VerticalAlignment="Center"
+                                                                  Margin="8,0,4,0" IsCheckedChanged="AppEnabledCheckBox_Changed"/>
+                                                        <Button Grid.Column="3" Theme="{StaticResource GhostButton}" Width="24" Height="24"
+                                                                Padding="0" Margin="4,0,2,0" ToolTip.Tip="{Binding ActionLabel}"
+                                                                Click="TargetActionsButton_Click" Tag="{Binding}">
+                                                            <Path Data="M1,1 L1,1 M5,1 L5,1 M9,1 L9,1" Stroke="{StaticResource TextMutedBrush}"
+                                                                  StrokeThickness="1.6" StrokeLineCap="Round" Margin="0,1,0,0"/>
+                                                        </Button>
+                                                    </Grid>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ListBox.ItemTemplate>
+                                    </ListBox>
+
+                                    <TextBlock x:Name="NoResultsText" FontSize="12" Foreground="{StaticResource TextMutedBrush}"
+                                               HorizontalAlignment="Center" Margin="0,10,0,10" IsVisible="False"/>
+                                </StackPanel>
+                            </Border>
+
+                            <TextBlock x:Name="NoteText" FontSize="11" Foreground="{StaticResource TextMutedBrush}" TextWrapping="Wrap"/>
+                            <Button x:Name="SaveSettingsButtonText" Theme="{StaticResource AccentButton}" Margin="0,16,0,0"
+                                    HorizontalAlignment="Stretch" Click="SaveSettingsButton_Click"/>
+                        </StackPanel>
+                    </ScrollViewer>
+                    </Panel>
+                </Panel>
+            </Grid>
+        </Border>
+
+        <!-- Resize handles; the window draws its own frame -->
+        <Border Classes="resize" Tag="North" Height="6" VerticalAlignment="Top" Margin="12,0" Cursor="TopSide" PointerPressed="ResizeGrip_PointerPressed"/>
+        <Border Classes="resize" Tag="South" Height="6" VerticalAlignment="Bottom" Margin="12,0" Cursor="BottomSide" PointerPressed="ResizeGrip_PointerPressed"/>
+        <Border Classes="resize" Tag="West" Width="6" HorizontalAlignment="Left" Margin="0,12" Cursor="LeftSide" PointerPressed="ResizeGrip_PointerPressed"/>
+        <Border Classes="resize" Tag="East" Width="6" HorizontalAlignment="Right" Margin="0,12" Cursor="RightSide" PointerPressed="ResizeGrip_PointerPressed"/>
+        <Border Classes="resize" Tag="NorthWest" Width="12" Height="12" HorizontalAlignment="Left" VerticalAlignment="Top" Cursor="TopLeftCorner" PointerPressed="ResizeGrip_PointerPressed"/>
+        <Border Classes="resize" Tag="NorthEast" Width="12" Height="12" HorizontalAlignment="Right" VerticalAlignment="Top" Cursor="TopRightCorner" PointerPressed="ResizeGrip_PointerPressed"/>
+        <Border Classes="resize" Tag="SouthWest" Width="12" Height="12" HorizontalAlignment="Left" VerticalAlignment="Bottom" Cursor="BottomLeftCorner" PointerPressed="ResizeGrip_PointerPressed"/>
+        <Border Classes="resize" Tag="SouthEast" Width="12" Height="12" HorizontalAlignment="Right" VerticalAlignment="Bottom" Cursor="BottomRightCorner" PointerPressed="ResizeGrip_PointerPressed"/>
+    </Panel>
+</Window>

@@ -1,0 +1,43 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="Dapapa.App.Dialogs.RelatedDomainsDialog"
+        x:CompileBindings="False"
+        Title="Related domains" Width="470" Height="520" MinWidth="400" MinHeight="360" ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner" WindowDecorations="None"
+        Background="Transparent" TransparencyLevelHint="Transparent">
+    <Border CornerRadius="12" Background="{StaticResource BgDarkBrush}" BorderBrush="{StaticResource BorderBrush2}"
+            BorderThickness="1" ClipToBounds="True">
+        <Grid RowDefinitions="Auto,Auto,Auto,*,Auto" Margin="20">
+            <Grid ColumnDefinitions="*,Auto" Background="Transparent" PointerPressed="Header_PointerPressed">
+                <TextBlock x:Name="HeadingText" FontSize="17" FontWeight="SemiBold" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                <Button Grid.Column="1" Theme="{StaticResource TitleBarCloseButton}" Margin="8,-6,-8,0" VerticalAlignment="Top"
+                        Click="CancelButton_Click">
+                    <Path Data="M0,0 L10,10 M0,10 L10,0" Stroke="{StaticResource TextPrimaryBrush}" StrokeThickness="1.4"/>
+                </Button>
+            </Grid>
+            <TextBlock x:Name="DescriptionText" Grid.Row="1" Classes="hint" Margin="0,8,0,12"/>
+            <TextBlock x:Name="StatusText" Grid.Row="2" FontSize="12" TextWrapping="Wrap" Margin="0,0,0,12"/>
+            <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                <ItemsControl x:Name="CandidatesItemsControl">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Background="{StaticResource BgCardBrush}" Padding="12" CornerRadius="8" Margin="0,0,0,8">
+                                <CheckBox IsChecked="{Binding Selected, Mode=TwoWay}" IsCheckedChanged="SelectionChanged">
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding Domain}" FontWeight="SemiBold"/>
+                                        <TextBlock Text="{Binding ReasonText}" Foreground="{StaticResource TextMutedBrush}"
+                                                   FontSize="11" Margin="0,3,0,0" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </CheckBox>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+            <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,14,0,0">
+                <Button x:Name="CancelButton" Theme="{StaticResource GhostButton}" Click="CancelButton_Click" Margin="0,0,8,0"/>
+                <Button x:Name="AddSelectedButton" Theme="{StaticResource AccentButton}" Click="AddSelectedButton_Click" IsEnabled="False"/>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>

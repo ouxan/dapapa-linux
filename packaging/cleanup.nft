@@ -1,0 +1,3 @@
+# Removes the dapapa table if it exists; other tables are never touched.
+table ip dapapa
+delete table ip dapapa

@@ -1,45 +1,61 @@
 <div align="center">
 
-<img src="Resources/app.png" width="88" alt="dapapa logo">
+<img src="assets/app.png" width="88" alt="dapapa logo">
 
-# dapapa
+# dapapa for Linux
 
-**Lightweight DPI circumvention and encrypted DNS for Windows — per domain, without a VPN.**
+**Lightweight DPI circumvention and encrypted DNS for Linux — per domain, without a VPN.**
 
-![Platform](https://img.shields.io/badge/platform-Windows%2010%20%7C%2011-0078D6?logo=windows)
-![.NET](https://img.shields.io/badge/.NET-8.0-512BD4?logo=dotnet)
-![UI](https://img.shields.io/badge/UI-WPF-5865F2)
-![WinDivert](https://img.shields.io/badge/WinDivert-2.2-3BA55D)
+![Platform](https://img.shields.io/badge/platform-Arch%20Linux-1793D1?logo=archlinux&logoColor=white)
+![.NET](https://img.shields.io/badge/.NET-10.0-512BD4?logo=dotnet)
+![UI](https://img.shields.io/badge/UI-Avalonia%2012-5865F2)
+![Netfilter](https://img.shields.io/badge/nftables-NFQUEUE-3BA55D)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
 </div>
 
 ---
 
+This repository is the Linux port of [dapapa](https://github.com/ouxan/dapapa), forked from its `main` branch. The packet processing, DPI methods, DNS-over-HTTPS client and user interface are ported from the Windows application; the Windows-specific parts (WinDivert, the hosts file, scheduled tasks and WPF) are replaced by an unprivileged Avalonia client and a small privileged helper built on nftables and NFQUEUE.
+
 ## What is dapapa?
 
-Some internet providers block websites by reading the name of the site inside your connection — a technique called **Deep Packet Inspection (DPI)**. dapapa slightly reshapes those first packets so the filter can no longer recognise the site name, while the real website still receives a perfectly normal connection. It also looks up the addresses of those sites through **encrypted DNS**, so the lookups cannot be read or tampered with.
+Some internet providers block websites by reading the name of the site inside your connection — a technique called **Deep Packet Inspection (DPI)**. dapapa slightly reshapes those first packets so the filter can no longer recognise the site name, while the real website still receives a perfectly normal connection. It also resolves the addresses of those sites through **encrypted DNS**, so the lookups cannot be read or tampered with.
 
 - You choose which sites it applies to — everything else is left untouched.
-- It is **not a VPN**: your IP address and internet speed stay the same, nothing is routed through another server.
-- It runs quietly in the system tray and can start with Windows.
+- It is **not a VPN**: your IP address and internet speed stay the same, and nothing is routed through another server.
+- It runs in the system tray, shows desktop notifications and can start with your session.
 
 <p align="center">
-  <img src="docs/images/targets.png" width="30%" alt="Target list">
+  <img src="docs/images/settings-targets.png" width="30%" alt="Target list">
   &nbsp;
-  <img src="docs/images/dpi-methods.png" width="30%" alt="DPI methods">
+  <img src="docs/images/settings-dpi.png" width="30%" alt="DPI methods">
   &nbsp;
   <img src="docs/images/statistics.png" width="30%" alt="Statistics">
 </p>
 
 ## Quick start
 
-1. Download `dapapa_Setup.exe` from the [Releases](../../releases/latest) page and install it. No .NET installation is required.
-2. Start dapapa and accept the administrator prompt (needed by the network driver).
-3. Go to **Settings → My targets → Add domain**, choose **Domain list** and paste your domains — one per line.
-4. Press **CONNECT** on the home screen. Done.
+The release package targets Arch Linux. All of its dependencies come from the official repositories.
 
-If a site still does not open, see [Finding a working setup](#finding-a-working-setup).
+1. Download `dapapa-<version>-x86_64.pkg.tar.zst` from the [Releases](../../releases/latest) page and install it:
+
+   ```bash
+   sudo pacman -U dapapa-*-x86_64.pkg.tar.zst
+   ```
+
+2. Enable the privileged helper and allow your user to control it, then log out and back in:
+
+   ```bash
+   sudo systemctl enable --now dapapa-helper.socket
+   sudo usermod -aG dapapa "$USER"
+   ```
+
+3. Start **dapapa** from your application launcher, or run `dapapa`.
+4. Go to **Settings → My targets → Add domain**, choose **Domain list** and paste your domains — one per line.
+5. Press **CONNECT** on the home screen.
+
+If a site still does not open, follow [Finding a working setup](https://github.com/ouxan/dapapa#finding-a-working-setup) in the original documentation.
 
 ### Example: Discord
 
@@ -59,279 +75,154 @@ discordstatus.com
 dis.gd
 ```
 
-If file uploads fail, also add Discord's upload storage host:
-
-```text
-discord-attachments-uploads-prd.storage.googleapis.com
-```
-
-After connecting, fully quit Discord (tray icon → **Quit Discord**) and reopen it, so it creates new connections.
+After connecting, restart Discord so that it opens new connections.
 
 > [!NOTE]
 > This list is only an example of how to group domains. dapapa is not affiliated with or endorsed by Discord Inc. Make sure your use complies with the laws of your country.
 
----
-
-## Detailed documentation
-
-- [How it works](#how-it-works)
-- [Targets](#targets)
-- [DPI modes](#dpi-modes)
-- [TCP methods](#tcp-methods)
-- [Fake packet methods](#fake-packet-methods)
-- [HTTP methods](#http-methods)
-- [QUIC blocking](#quic-blocking)
-- [UDP methods](#udp-methods)
-- [DNS over HTTPS](#dns-over-https)
-- [Statistics](#statistics)
-- [Finding a working setup](#finding-a-working-setup)
-- [Limitations](#limitations)
-- [Building from source](#building-from-source)
-
-### How it works
+## How it works
 
 ```
- Application ──► WinDivert ──► dapapa packet worker ──► Network
-                    │
-                    ├─ TCP 80/443 to target IPs  →  split / reorder / fake packets / HTTP header changes
-                    ├─ UDP 53 for target domains →  local resolver (127.0.0.1:5300) → DNS over HTTPS
-                    └─ UDP to target IPs         →  block QUIC or apply UDP methods
+ Application ──► nftables (table ip dapapa) ──► NFQUEUE ──► dapapa-helper ──► Network
+                         │
+                         ├─ TCP 80/443 first data packets  →  split / reorder / fake packets / HTTP header changes
+                         ├─ UDP 53 for target domains      →  local resolver (127.0.0.1:5300) → DNS over HTTPS
+                         └─ UDP to target IPs              →  block QUIC or apply UDP methods
 ```
 
-dapapa uses the [WinDivert](https://github.com/basil00/WinDivert) driver to capture only the packets it needs. For every captured TCP packet it reads the **TLS SNI** (the site name in an HTTPS handshake) or the **HTTP `Host` header**. Only when that name matches one of your targets is the packet modified; a shared IP address alone is never enough. Everything else passes through untouched.
-
-Each packet is processed with a snapshot of the settings taken when processing begins, so changes apply to new packets immediately without reconnecting.
-
-### Targets
-
-| Topic | Behaviour |
-| --- | --- |
-| Adding | **Single domain** or **Domain list** (one domain or HTTP/HTTPS URL per line). Empty lines are skipped and duplicates removed. Up to 500 domains per group. If any line is invalid, nothing is saved. |
-| Matching | A domain covers itself and all its subdomains: `example.com` matches `api.example.com`, but not `notexample.com` or `example.com.other.net`. |
-| Groups | A list is saved as one group with one switch. The display name is optional (defaults to the first domain). Groups can be edited, deleted or searched; search also finds domains inside a group. |
-| Live changes | Adding, editing, enabling or disabling a target applies to the running session. Removing the last enabled target stops protection. |
-| Shortcuts | In multi-line fields, Enter adds a new line and Ctrl+Enter saves. |
-
-#### Related domain discovery
-
-When adding a domain you can enable **Find related domains** (off by default). The group is saved first, then the HTTPS home page of the first domain is downloaded and inspected:
-
-- **Sources:** resource addresses (scripts, styles, images, preload links), redirects and Content-Security-Policy connection rules. Ordinary outgoing links are ignored. Relative URLs are resolved against the page and `<base>` address.
-- **Limits:** at most 5 HTTPS redirects, 15 seconds in total, 2 MiB of decompressed HTML and 100 candidates. It never leaves HTTPS and always validates certificates.
-- **Privacy:** resources are not downloaded, JavaScript is not executed, no login takes place. WebView2 is not required.
-- **Result:** candidates start unselected. **Add selected** adds them to the same group. An HTTP `403`, a non-HTML response or a network error is reported as a failure; partial results are shown clearly.
-
-Discovery cannot find every CDN, API or voice endpoint, and CSP entries are only *allowed* destinations — not proof that they are used. Advertising and analytics domains may also be suggested.
-
-### DPI modes
-
-| Mode | Behaviour |
-| --- | --- |
-| **Standard** | Splits the TLS ClientHello / HTTP request after 2 bytes into two TCP segments, sends the second segment first and blocks QUIC (UDP/443) to target IPs. This is the default. |
-| **Custom** | Every method below can be enabled and tuned individually. Changes are saved and applied immediately. Switching back to Standard keeps your Custom selections. |
-
-With every method turned off, dapapa still handles DNS for your target domains. Invalid Custom values never prevent switching back to Standard.
-
-### TCP methods
-
-| Option | Description |
-| --- | --- |
-| **TCP segmentation** | Splits the first data packet (TLS ClientHello or HTTP request) into two TCP segments. The byte stream the server receives is unchanged; only the packet boundaries move, so a filter that inspects single packets cannot see the whole site name. |
-| **Send segments in reverse order** | Sends the second segment first (*disorder*). The server's TCP stack reassembles them, but many filters only look at the first packet they see. Off: segments are sent in order. |
-| **Split inside TLS SNI / HTTP Host** | Moves the split point from byte 2 to the middle of the hostname, so the name itself is cut in two. |
-| **TCP split size (1–1024 bytes)** | Position of the simple split. Default: 2. |
-| **Multiple split points (multisplit)** | Splits at up to 7 positions (8 segments). With reverse order enabled it becomes *multidisorder*. Overrides the simple split size and hostname split. |
-| **Split markers, up to 7** | Comma-separated positions for multisplit. Default: `2,host,midsld,endhost`. See the table below. |
-| **Maximum payload (0 = no limit)** | TCP payloads larger than this value (1–65535) pass unchanged. DNS and QUIC handling are not affected. |
-
-Split markers (each accepts a `+N` / `-N` offset, e.g. `endhost-1`; a plain negative number counts from the end of the packet):
-
-| Marker | Position |
-| --- | --- |
-| `N` | Absolute byte offset in the payload |
-| `host` / `midhost` / `endhost` | Start / middle / end of the hostname |
-| `sld` / `midsld` / `endsld` | Start / middle / end of the second-level domain (`discord` in `cdn.discord.com`) |
-| `sniext` | Start of the TLS SNI extension (TLS only) |
-| `method` | Start of the HTTP method (HTTP only) |
-
-Positions outside the packet or not present in the protocol are skipped, and duplicates are merged. If the full SNI cannot be read from a single TCP packet, the packet is left unchanged — packets are never reassembled. Packets carrying SYN, RST or URG flags, fragmented IPv4 packets and unsupported data are always passed through.
-
-### Fake packet methods
-
-A *fake* is a copy of the real first packet in which the hostname is replaced (by default every letter becomes `x`, e.g. `xxxxxxx.xxx`) and which is deliberately damaged so that **the real server discards it, but the filter in between accepts it**. The filter then "sees" a harmless site name and lets the real packets through. The real packets are never modified by these options.
-
-Fakes are only sent when the hostname is readable and matches a target. Each enabled method produces its own separate fake.
-
-| Option | How the fake is made invalid | Caveats |
+| Component | Runs as | Role |
 | --- | --- | --- |
-| **Fake packet with invalid TCP checksum** (`badsum`) | The TCP checksum is intentionally wrong. | Network cards or devices that correct checksums (offload) can make the fake valid and break the connection. |
-| **Out-of-window SEQ/ACK** (`badseq`) | SEQ is shifted by `0x80000000` (half the sequence space) and ACK by `-66000`, placing the fake far outside the receive window. | The filter may also ignore out-of-window packets. |
-| **Fixed low TTL** | Only the fake gets a TTL of 1–64 (default 2), so it expires before reaching the server. | If the server is closer than the TTL, the fake arrives and can break the connection. |
-| **AutoTTL** | Estimates the hop count from the TTL of the server's SYN+ACK (assuming an initial TTL of 64, 128 or 255) and uses one less, capped at 20. | Skipped when there is no recent sample or the distance is 0–1 hop; no fallback to fixed TTL. Takes priority over fixed TTL. Asymmetric routes can make the estimate wrong. |
-| **Invalid TCP MD5 signature** (`md5sig`) | Adds a fake TCP MD5 signature option, which servers without MD5 authentication reject. | Skipped if the TCP header is already longer than 40 bytes or the packet exceeds 1480 bytes. Some servers ignore the option. |
-| **Old TCP timestamp** (`ts`) | Lowers the TCP timestamp value (TSval) by 600000, so PAWS protection drops the fake. | Skipped if the connection has no timestamp option. Windows settings are not changed. |
-| **Without ACK** (`datanoack`) | Clears the ACK flag on the fake. | Some NAT devices drop such packets before they reach the filter. |
+| `dapapa` | your user | Avalonia GUI with tray icon and notifications; a port of the Windows window and dialogs |
+| `dapapactl` | your user | Command-line client for testing and scripting |
+| `dapapa-helper` | root, systemd | Owns the `ip dapapa` nftables table, consumes the netfilter queue, injects rebuilt packets through a raw socket and runs the local DNS-over-HTTPS resolver |
 
-Additional fake options:
+The helper is socket-activated through `/run/dapapa/helper.sock`, which is owned by the `dapapa` group. Its systemd unit grants only `CAP_NET_ADMIN` and `CAP_NET_RAW`. Protection belongs to the client connection that started it: if that client exits or crashes, the helper stops protection after a short grace period and removes its rules. If the helper itself is killed, the queue is configured to fail open, so traffic keeps flowing.
 
-| Option | Description |
+The DPI modes, TCP, fake-packet, HTTP, QUIC and UDP methods, and the DNS-over-HTTPS providers behave as in the Windows application and are documented in the [original README](https://github.com/ouxan/dapapa#detailed-documentation). Further Linux documentation:
+
+- [Architecture](docs/architecture.md): components, privilege model and helper protocol
+- [Network lifecycle](docs/network-lifecycle.md): nftables ownership, DNS path and failure handling
+- [Visual parity](docs/visual-parity.md): the Linux GUI next to the Windows application
+- [Testing](docs/testing.md): test suites and results
+
+## Differences from the Windows version
+
+| Windows | Linux |
 | --- | --- |
-| **Randomize fake TLS random/session ID** | Fills the random and session ID fields of the fake ClientHello with random bytes, so the fake does not resemble the real handshake. |
-| **Fake hostname template** | Uses your own hostname in the fake instead of `x` characters. It is padded or trimmed from the left to the exact length of the original name, so all TLS lengths stay valid. |
-| **Repeats per fake type (1–6)** | Sends each fake 1–6 times. Real packets are never repeated. |
-| **Mix fakes around TCP segments** (`fakedsplit` / `fakeddisorder`) | With TCP segmentation, each real segment is surrounded by fake segments before and after it. With reverse order it becomes *fakeddisorder*. At most 96 injections per original packet; when the limit is reached extra fakes are dropped, never real data. |
+| WinDivert driver inside the application | Separate root helper with nftables and NFQUEUE; the GUI never runs as root |
+| Administrator prompt on start | Membership of the `dapapa` group |
+| Windows DNS cache flush and `hosts` cleanup | The helper flushes systemd-resolved when it is in use; no system file is changed |
+| Start with Windows (scheduled task) | Start on login through an XDG autostart entry |
+| Tray balloons | Desktop notifications through `org.freedesktop.Notifications` |
+| Stopping leaves existing connections open | Stopping closes the connections that only worked through dapapa, so the change takes effect at once |
 
-AutoTTL samples are matched to the exact client/server IP and port, kept for 60 seconds and limited to 1024 entries. Incoming SYN+ACK packets are only observed, never changed. Inbound SYN+ACK is not captured at all while AutoTTL is off.
+## Hyprland and other Wayland compositors
 
-### HTTP methods
+- **Window backend.** The window runs through XWayland with the class `dapapa`. Avalonia 12.1.4's native Wayland backend currently limits animations to about 10 frames per second; set `DAPAPA_WAYLAND=1` to use it anyway. Sessions without an X server always use the native Wayland backend.
+- **Tray icon.** The icon is a StatusNotifierItem and appears in a panel with a tray module, such as Waybar's.
+- **Floating window.** Hyprland tiles new windows. To keep the original window size, float and centre it with a window rule:
 
-These apply **only to plain HTTP on port 80** — HTTPS is never modified. They target complete `GET`, `POST` and `HEAD` requests; requests with a missing or duplicated `Host` header are left unchanged. None of them changes the length of the TCP stream, so no sequence/ACK translation is needed.
+  ```lua
+  -- hyprland.lua (Hyprland 0.56 and later)
+  hl.window_rule({
+      name  = "dapapa-float",
+      match = { class = "^dapapa$" },
+      float = true,
+      move  = "(monitor_w-window_w)/2 (monitor_h-window_h)/2",
+  })
+  ```
 
-| Option | Example | Description |
-| --- | --- | --- |
-| **Host → hOsT** | `Host:` → `hOsT:` | Header names are case-insensitive for servers (RFC 9110) but naive filters may look for the exact text `Host:`. |
-| **Mix hostname case** | `example.com` → `ExAmPlE.CoM` | Hostnames are case-insensitive; exact-match filters miss them. |
-| **Remove the space after Host:** | `Host: a.com` → `Host:a.com ` | Moves the optional space to the end of the value. |
-| **Extra space after HTTP method** (`methodspace`) | `GET /` → `GET  /` | Moves the Host space after the method. |
-| **LF before HTTP method** (`methodeol`) | `GET /` → `\nGET /` | Moves the Host space in front of the method as a line feed. Methodspace wins if both are enabled. |
-| **Use a tab after Host:** (`hosttab`) | `Host: a.com` → `Host:\ta.com` | Replaces the space with a TAB, if it was not already used by the options above. |
+  With a `hyprland.conf`, use a `windowrule` with `float` and `center` for the same class.
+- **Start on login.** Hyprland runs XDG autostart entries only when the session is started through uwsm. Otherwise, start dapapa from the Hyprland configuration: `exec-once = dapapa --tray` in `hyprland.conf`, or `hl.on("hyprland.start", function() hl.exec_cmd("dapapa --tray") end)` in `hyprland.lua`.
 
-Some servers reject requests with extra spaces or line feeds.
+## Command-line client
 
-### QUIC blocking
+`dapapactl` controls the same helper as the GUI:
 
-**Block QUIC for target IPs** drops outgoing UDP/443 traffic to target IP addresses. Browsers and apps then fall back to TCP/TLS, where the TCP methods above work. It is enabled in Standard mode and on by default in Custom.
+```bash
+dapapactl run --domain discord.com --domain discord.gg   # protect until Ctrl+C
+dapapactl run --domains targets.txt --options custom.json --provider Cloudflare
+dapapactl status
+dapapactl refresh --force
+dapapactl stop
+```
 
-Blocking is **IP-based**: other domains that share the same IP may also lose QUIC (they fall back to TCP as well). While blocking is on, UDP/443 packets are dropped before the UDP methods below run — turn it off to try QUIC methods.
+`--options` takes Custom DPI settings as JSON. `--provider` accepts `Quad9Ecs` (default), `Quad9`, `Cloudflare`, `Google` and `AdGuard`.
 
-### UDP methods
-
-Available under **Custom → UDP methods**, all off by default.
-
-| Option | Description |
-| --- | --- |
-| **UDP fake with invalid checksum** (`badsum`) | Sends a separate 64-zero-byte datagram with a non-zero, invalid UDP checksum before the real one. |
-| **UDP fake with fixed low TTL** | Sends the same fake with a TTL of 1–64 so it expires before the server. There is no UDP AutoTTL. |
-| **UDP fake repeats (1–6)** | Number of times each fake type is sent. The real datagram is never repeated. |
-| **IPv4 fragmentation** (`ipfrag2`) | Splits the real datagram into two IP fragments. The first fragment's payload is 8–1440 bytes (a multiple of 8, includes the UDP header). Fragments share an ID, DF is cleared, MF/offset are set correctly and the UDP checksum covers the full datagram. Some networks drop fragments. |
-| **Send IP fragments in reverse order** | Sends the second fragment first. |
-| **QUIC Initial length padding** (`udplen`) | Appends 1–64 zero bytes to recognised QUIC v1/v2 Initial datagrams and updates the lengths and checksums. The encrypted QUIC packet itself is unchanged. Some QUIC implementations may reject it. |
-| **First eligible packets per UDP flow (1–20)** | Only the first N matching datagrams of a flow are processed (default 3). A flow is reset after 60 seconds of silence. |
-
-**Eligible protocols** decide which datagrams are processed: QUIC v1/v2 Initial (on by default), STUN, WireGuard handshake initiation, Discord voice IP discovery and *Other / unrecognised UDP*. The last option can include voice/RTP and may disrupt media.
-
-Scope and safety rules:
-
-- Only outgoing IPv4 traffic to target IPs is processed. IPv6, DNS (port 53), existing fragments, packets with IPv4 options or larger than 1500 bytes are passed through.
-- QUIC headers (version, connection IDs, token, length) are validated, but QUIC is **not decrypted**, so matching is IP-based and may affect other domains on the same IP.
-- Fakes are generic and are not valid QUIC/STUN/WireGuard handshakes.
-- At most 1024 flows are tracked and at most 14 injections are made per datagram. Flows are cleared when targets or the session change.
-
-### DNS over HTTPS
-
-DNS queries for **your target domains only** are answered by dapapa:
-
-1. Outgoing IPv4 UDP/53 queries matching a target are captured.
-2. The query is passed through a separate socket to a local resolver on `127.0.0.1:5300` — the original packet is not redirected.
-3. The resolver sends it as an RFC 8484 `application/dns-message` HTTPS POST to the selected provider.
-4. The answer is returned as if it came from your original DNS server (same client, transaction ID, question and interface).
-
-| Provider | Endpoint | Profile |
-| --- | --- | --- |
-| **Quad9 (ECS)** — default | `https://dns11.quad9.net/dns-query` | Threat blocking, ECS for better CDN selection |
-| Quad9 | `https://dns.quad9.net/dns-query` | Threat blocking |
-| Cloudflare | `https://1.1.1.1/dns-query` | Unfiltered |
-| Google Public DNS | `https://dns.google/dns-query` | Unfiltered |
-| AdGuard DNS | `https://dns.adguard-dns.com/dns-query` | Blocks ads and trackers |
-
-- **Target IP resolution** (which IPs the TCP/UDP methods apply to) always uses Cloudflare DoH with a separate cache. Up to 8 domains are resolved in parallel and IPs are refreshed according to their TTL; failures are retried after 30 seconds. **Sync IPs** clears this cache manually.
-- **Limits:** 4-second timeout, 8 active / 64 pending requests and 512 cache entries per DoH client. Identical queries are merged; TTL and HTTP `Age` are respected.
-- **No plain-text fallback:** on error or overload the client receives `SERVFAIL`. dapapa never silently falls back to unencrypted DNS or another provider.
-- Oversized replies are returned with the `TC` flag. TCP/53 is not captured, so such retries use the normal system DNS. Applications with their own DoH client bypass dapapa's resolver.
-- Changing the provider while connected restarts the session cleanly and flushes the Windows DNS cache. Windows adapter DNS settings are never changed.
-- No `hosts` entries are written. Leftover entries from old versions are removed on start and disconnect (a timestamped backup is created first; other entries are preserved).
-
-### Statistics
-
-- **Download / upload speed** and a live chart for the network adapter Windows uses to reach the internet. This includes traffic from all applications.
-- **Bypassed packets:** packets modified by the selected methods.
-- **Local DNS replies:** DNS queries answered over HTTPS.
-- **DNS response time (DoH):** duration of a real DoH query to the selected provider. It is not a ping to Discord or any target. Failed or timed-out queries are not shown as successful.
-
-### Finding a working setup
-
-DPI implementations differ between providers and change over time, so no single profile works everywhere. A reasonable order to try:
-
-1. **Standard** mode.
-2. **Custom:** TCP segmentation + reverse order + *Split inside TLS SNI*.
-3. Add **multisplit** with the default markers.
-4. Add one fake method, starting with **badseq** or **AutoTTL**, then **badsum**. Enable only one at a time first.
-5. Try **Mix fakes around TCP segments** and 2–3 repeats.
-6. For voice or QUIC problems, turn off QUIC blocking and experiment with UDP methods.
-
-Each time, restart the application you are testing so it opens new connections. *Protection active* only means the packet worker is running — it does not prove a site is reachable. If connections start failing, switch back to Standard.
-
-### Limitations
+## Limitations
 
 - IPv4 only; IPv6 traffic passes through unchanged.
-- ECH (Encrypted Client Hello), per-process filtering and TCP/53 DNS are not supported.
-- TLS records are never rewritten and TCP packets are never reassembled.
-- Already established connections are not reset when dapapa starts or exits.
-- Closing the window hides dapapa in the tray; use **Exit** from the tray menu to quit. Forced termination (Task Manager, power loss) cannot guarantee cleanup.
+- ECH (Encrypted Client Hello), per-process filtering and DNS over TCP are not supported.
+- After a kernel upgrade, restart the computer before starting protection: the running kernel's netfilter modules are no longer installed. dapapa reports this instead of failing with a low-level error.
+- Closing the window hides dapapa in the tray when that setting is on; use **Exit** from the tray menu to quit.
 
 ---
 
 ## Building from source
 
-Requires the [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0). [Inno Setup 6](https://jrsoftware.org/isinfo.php) is optional and only needed for the installer.
+Requires `dotnet-sdk` (10), `nftables`, `libnetfilter_queue` and `iproute2`; `base-devel` is needed to build the package. All are in the official Arch repositories.
 
-```powershell
-git clone https://github.com/ouxan/dapapa.git
-cd dapapa
-dotnet build dapapa.csproj -c Release
+```bash
+git clone https://github.com/ouxan/dapapa-linux.git
+cd dapapa-linux
+dotnet build dapapa-linux.slnx -c Release
+```
+
+Build and install the Arch package from the current commit:
+
+```bash
+packaging/arch/build.sh
+sudo pacman -U artifacts/package/dapapa-*-x86_64.pkg.tar.zst
+```
+
+To run from the build output without installing, start the helper in one terminal (the `wheel` group stands in for the package's `dapapa` group) and the GUI in another:
+
+```bash
+sudo dotnet src/Dapapa.Helper/bin/Release/net10.0/dapapa-helper.dll --socket /run/dapapa/helper.sock --socket-group wheel
+dotnet src/Dapapa.App/bin/Release/net10.0/dapapa.dll
 ```
 
 Run the test suites:
 
-```powershell
-dotnet run --project Tests/dapapa.Tests.csproj -c Release
-dotnet run --project Tests/Ui/dapapa.UiTests.csproj -c Release
+```bash
+(cd tests/Dapapa.Core.Tests && dotnet run -c Release --no-build)
+(cd tests/Dapapa.App.Tests && dotnet run -c Release --no-build -- ../../artifacts/screenshots)
+sudo dotnet tests/Dapapa.Helper.Tests/bin/Release/net10.0/Dapapa.Helper.Tests.dll
+sudo bash tests/integration/run.sh
 ```
 
-Build the full release (tests → self-contained single-file publish → installer):
-
-```powershell
-.\build_setup.bat
-```
-
-Output is written to `artifacts\release` and `setup_output\dapapa_Setup.exe`.
+The helper and integration tests need root; the integration test works only inside network namespaces that it creates and removes. An Arch Linux development container is also available; see [docs/testing.md](docs/testing.md).
 
 <details>
 <summary><b>Project structure</b></summary>
 
 ```
-├── Dialogs/        Add-target, related-domain and sync result dialogs
-├── Models/         Settings, DoH providers and DPI option models
-├── Services/       Packet processing, DNS/DoH, WinDivert, hosts, tray, startup
-├── Resources/      Icons and third-party licence notices
-├── Tests/          Unit tests and WPF UI tests
-├── windivert/      WinDivert 2.2 driver and library
-├── installer.iss   Inno Setup script
-└── build_setup.bat Release build script
+├── src/Dapapa.Core     Packet processing, DPI methods, DNS/DoH, settings, localisation, helper protocol
+├── src/Dapapa.Helper   Privileged helper: nftables, NFQUEUE, raw sockets, local resolver
+├── src/Dapapa.Cli      dapapactl
+├── src/Dapapa.App      Avalonia GUI, tray icon, notifications, autostart
+├── tests/              Unit, GUI, helper, Wayland and network-namespace integration tests
+├── packaging/          PKGBUILD, systemd units, sysusers entry, desktop file
+├── docker/             Arch Linux development and test container
+└── docs/               Architecture, network lifecycle, visual parity and testing
 ```
 
 </details>
 
 ## Data and privacy
 
-- Settings: `%APPDATA%\dapapa\settings.json`
-- Log: `%APPDATA%\dapapa\dapapa.log` (rotated at 2 MiB, three old logs kept)
+- Settings: `$XDG_CONFIG_HOME/dapapa/settings.json` (usually `~/.config/dapapa/settings.json`)
+- Log: `$XDG_STATE_HOME/dapapa/dapapa.log` (usually `~/.local/state/dapapa/dapapa.log`; rotated at 2 MiB, one old log kept)
+- Helper log: the systemd journal (`journalctl -u dapapa-helper`)
 
-dapapa has no telemetry. Network requests are limited to the selected DoH provider, Cloudflare DoH for target IP resolution and — only when you start it — related domain discovery for the site you entered.
+dapapa has no telemetry. Network requests are limited to the selected DoH provider, Cloudflare DoH for target IP resolution, the DoH response-time measurement while the window is open and connected, and — only when you start it — related domain discovery for the site you entered.
 
 ## Acknowledgements
 
-- [WinDivert](https://github.com/basil00/WinDivert) — packet capture and injection (LGPL-3.0)
+- [dapapa](https://github.com/ouxan/dapapa) — the original Windows application this port is based on (MIT)
+- [Avalonia](https://github.com/AvaloniaUI/Avalonia) — cross-platform user interface (MIT)
+- [libnetfilter_queue](https://netfilter.org/projects/libnetfilter_queue/) and [nftables](https://netfilter.org/projects/nftables/) — packet queueing and filtering
+- [Tmds.DBus](https://github.com/tmds/Tmds.DBus) — D-Bus for the tray icon and notifications (MIT)
 - [AngleSharp](https://github.com/AngleSharp/AngleSharp) — HTML parsing for domain discovery (MIT)
 - [GoodbyeDPI](https://github.com/ValdikSS/GoodbyeDPI) and [zapret](https://github.com/bol-van/zapret) — reference for DPI circumvention techniques; dapapa implements them independently and runs no external tools.
 

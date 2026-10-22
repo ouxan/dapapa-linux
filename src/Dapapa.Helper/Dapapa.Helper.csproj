@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>dapapa-helper</AssemblyName>
+    <RootNamespace>Dapapa.Helper</RootNamespace>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Dapapa.Core\Dapapa.Core.csproj" />
+    <InternalsVisibleTo Include="Dapapa.Helper.Tests" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,13 @@
+[Unit]
+Description=dapapa helper socket
+
+[Socket]
+ListenStream=/run/dapapa/helper.sock
+SocketUser=root
+SocketGroup=dapapa
+SocketMode=0660
+DirectoryMode=0755
+RemoveOnStop=yes
+
+[Install]
+WantedBy=sockets.target

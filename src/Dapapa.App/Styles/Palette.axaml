@@ -1,0 +1,56 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <FontFamily x:Key="AppFont">avares://dapapa/Assets/Fonts#Selawik</FontFamily>
+
+    <Color x:Key="BgDarkColor">#1A1B26</Color>
+    <Color x:Key="BgPanelColor">#22232F</Color>
+    <Color x:Key="BgCardColor">#2A2C3B</Color>
+    <Color x:Key="AccentColor">#5865F2</Color>
+    <Color x:Key="AccentHoverColor">#6E78F5</Color>
+    <Color x:Key="DangerColor">#ED4245</Color>
+    <Color x:Key="SuccessColor">#3BA55D</Color>
+    <Color x:Key="TextPrimaryColor">#F2F3F5</Color>
+    <Color x:Key="TextMutedColor">#9BA0AE</Color>
+    <Color x:Key="BorderColor">#3A3C4E</Color>
+
+    <SolidColorBrush x:Key="BgDarkBrush" Color="{StaticResource BgDarkColor}"/>
+    <SolidColorBrush x:Key="BgPanelBrush" Color="{StaticResource BgPanelColor}"/>
+    <SolidColorBrush x:Key="BgCardBrush" Color="{StaticResource BgCardColor}"/>
+    <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource AccentColor}"/>
+    <SolidColorBrush x:Key="AccentHoverBrush" Color="{StaticResource AccentHoverColor}"/>
+    <SolidColorBrush x:Key="DangerBrush" Color="{StaticResource DangerColor}"/>
+    <SolidColorBrush x:Key="SuccessBrush" Color="{StaticResource SuccessColor}"/>
+    <SolidColorBrush x:Key="TextPrimaryBrush" Color="{StaticResource TextPrimaryColor}"/>
+    <SolidColorBrush x:Key="TextMutedBrush" Color="{StaticResource TextMutedColor}"/>
+    <SolidColorBrush x:Key="BorderBrush2" Color="{StaticResource BorderColor}"/>
+
+    <BoxShadows x:Key="CardShadow">0 3 22 0 #47000000</BoxShadows>
+    <BoxShadows x:Key="AccentGlow">0 0 16 0 #E65865F2</BoxShadows>
+    <BoxShadows x:Key="DangerGlow">0 0 16 0 #E6ED4245</BoxShadows>
+
+    <!-- Fluent resources used by the controls that keep their Fluent template (text boxes, menus, tooltips). -->
+    <SolidColorBrush x:Key="TextControlBackground" Color="{StaticResource BgCardColor}"/>
+    <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="{StaticResource BgCardColor}"/>
+    <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="{StaticResource BgCardColor}"/>
+    <SolidColorBrush x:Key="TextControlBackgroundDisabled" Color="{StaticResource BgPanelColor}"/>
+    <SolidColorBrush x:Key="TextControlBorderBrush" Color="{StaticResource BorderColor}"/>
+    <SolidColorBrush x:Key="TextControlBorderBrushPointerOver" Color="{StaticResource BorderColor}"/>
+    <SolidColorBrush x:Key="TextControlBorderBrushFocused" Color="{StaticResource AccentColor}"/>
+    <SolidColorBrush x:Key="TextControlBorderBrushDisabled" Color="{StaticResource BorderColor}"/>
+    <SolidColorBrush x:Key="TextControlForeground" Color="{StaticResource TextPrimaryColor}"/>
+    <SolidColorBrush x:Key="TextControlForegroundPointerOver" Color="{StaticResource TextPrimaryColor}"/>
+    <SolidColorBrush x:Key="TextControlForegroundFocused" Color="{StaticResource TextPrimaryColor}"/>
+    <SolidColorBrush x:Key="TextControlForegroundDisabled" Color="{StaticResource TextMutedColor}"/>
+    <SolidColorBrush x:Key="TextControlSelectionHighlightColor" Color="{StaticResource AccentColor}"/>
+    <Thickness x:Key="TextControlBorderThemeThickness">1</Thickness>
+    <Thickness x:Key="TextControlBorderThemeThicknessFocused">1</Thickness>
+    <SolidColorBrush x:Key="MenuFlyoutPresenterBackground" Color="{StaticResource BgCardColor}"/>
+    <SolidColorBrush x:Key="MenuFlyoutPresenterBorderBrush" Color="{StaticResource BorderColor}"/>
+    <SolidColorBrush x:Key="MenuFlyoutItemBackgroundPointerOver" Color="{StaticResource AccentColor}"/>
+    <SolidColorBrush x:Key="MenuFlyoutItemBackgroundPressed" Color="{StaticResource AccentHoverColor}"/>
+    <SolidColorBrush x:Key="MenuFlyoutItemForeground" Color="{StaticResource TextPrimaryColor}"/>
+    <SolidColorBrush x:Key="MenuFlyoutItemForegroundPointerOver" Color="White"/>
+    <SolidColorBrush x:Key="ToolTipBackground" Color="{StaticResource BgCardColor}"/>
+    <SolidColorBrush x:Key="ToolTipBorderBrush" Color="{StaticResource BorderColor}"/>
+    <SolidColorBrush x:Key="ToolTipForeground" Color="{StaticResource TextPrimaryColor}"/>
+</ResourceDictionary>

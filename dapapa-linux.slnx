@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Dapapa.App/Dapapa.App.csproj" />
+    <Project Path="src/Dapapa.Core/Dapapa.Core.csproj" />
+    <Project Path="src/Dapapa.Cli/Dapapa.Cli.csproj" />
+    <Project Path="src/Dapapa.Helper/Dapapa.Helper.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Dapapa.App.Tests/Dapapa.App.Tests.csproj" />
+    <Project Path="tests/Dapapa.Core.Tests/Dapapa.Core.Tests.csproj" />
+    <Project Path="tests/Dapapa.Helper.Tests/Dapapa.Helper.Tests.csproj" />
+  </Folder>
+</Solution>

@@ -1,0 +1,4 @@
+<Project>
+  <!-- Avalonia's build tooling reports anonymous build statistics; this replaces that target with an empty one. -->
+  <Target Name="AvaloniaStats" />
+</Project>

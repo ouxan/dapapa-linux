@@ -1,16 +1,10 @@
-# Build output
 bin/
 obj/
 artifacts/
-setup_output/
-
-# IDE
+pkg/
+*.pkg.tar.zst
 .vs/
 .vscode/
 .idea/
 *.user
-*.suo
-
-# OS
-Thumbs.db
-Desktop.ini
+*.log

@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=dapapa
+GenericName=DPI circumvention
+Comment=Per-domain DPI circumvention and DNS over HTTPS
+Exec=dapapa
+Icon=dapapa
+Terminal=false
+Categories=Network;
+Keywords=dpi;dns;doh;censorship;discord;
+StartupWMClass=dapapa

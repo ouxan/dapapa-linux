@@ -1,0 +1,21 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="Dapapa.App.Dialogs.MessageDialog"
+        Width="400" SizeToContent="Height" CanResize="False" ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner" WindowDecorations="None"
+        Background="Transparent" TransparencyLevelHint="Transparent">
+    <Border CornerRadius="14" Background="{StaticResource BgCardBrush}" BorderBrush="{StaticResource BorderBrush2}"
+            BorderThickness="1.5" PointerPressed="Root_PointerPressed">
+        <StackPanel Margin="24">
+            <TextBlock x:Name="HeadingText" FontSize="16" FontWeight="Bold" Margin="0,0,0,10" TextWrapping="Wrap"/>
+            <TextBlock x:Name="MessageText" FontSize="12.5" Foreground="{StaticResource TextPrimaryBrush}" TextWrapping="Wrap"
+                       Margin="0,0,0,20"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button x:Name="SecondaryButton" Theme="{StaticResource GhostButton}" MinWidth="90" Margin="0,0,8,0"
+                        IsVisible="False" Click="SecondaryButton_Click"/>
+                <Button x:Name="PrimaryButton" Theme="{StaticResource AccentButton}" MinWidth="110" Height="36"
+                        Click="PrimaryButton_Click"/>
+            </StackPanel>
+        </StackPanel>
+    </Border>
+</Window>

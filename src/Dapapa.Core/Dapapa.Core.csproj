@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>Dapapa.Core</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="AngleSharp" Version="1.8.5" />
+    <InternalsVisibleTo Include="dapapa" />
+    <InternalsVisibleTo Include="dapapa-helper" />
+    <InternalsVisibleTo Include="Dapapa.App.Tests" />
+    <InternalsVisibleTo Include="Dapapa.Core.Tests" />
+    <InternalsVisibleTo Include="Dapapa.Helper.Tests" />
+  </ItemGroup>
+</Project>

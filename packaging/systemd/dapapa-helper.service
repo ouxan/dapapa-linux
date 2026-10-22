@@ -1,0 +1,28 @@
+[Unit]
+Description=dapapa privileged network helper
+Documentation=https://github.com/ouxan/dapapa-linux
+Requires=dapapa-helper.socket
+After=network.target dapapa-helper.socket
+
+[Service]
+Type=simple
+ExecStart=/usr/lib/dapapa/dapapa-helper
+# Remove the helper's nftables table even if the process was killed.
+ExecStopPost=-/usr/bin/nft -f /usr/lib/dapapa/cleanup.nft
+Restart=on-failure
+RestartSec=2
+Environment=DOTNET_CLI_TELEMETRY_OPTOUT=1
+
+# The helper needs raw sockets, netfilter queues and nftables; nothing else is granted.
+CapabilityBoundingSet=CAP_NET_ADMIN CAP_NET_RAW
+NoNewPrivileges=yes
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6 AF_NETLINK
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+ProtectControlGroups=yes
+ProtectKernelTunables=yes
+LockPersonality=yes
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+SystemCallArchitectures=native

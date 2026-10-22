@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <AssemblyName>dapapa</AssemblyName>
+    <RootNamespace>Dapapa.App</RootNamespace>
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    <ApplicationIcon>..\..\assets\app.ico</ApplicationIcon>
+    <!-- A UI that mostly idles gains nothing from PGO instrumentation, which only adds start-up and idle CPU work. -->
+    <TieredPGO>false</TieredPGO>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="12.1.4" />
+    <PackageReference Include="Avalonia.Desktop" Version="12.1.4" />
+    <PackageReference Include="Avalonia.Wayland" Version="12.1.4" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.4" />
+    <!-- Already used by Avalonia for the tray; referenced directly for desktop notifications. Keep in step with Avalonia. -->
+    <PackageReference Include="Tmds.DBus.Protocol" Version="0.94.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Dapapa.Core\Dapapa.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <AvaloniaResource Include="Assets\**" />
+    <AvaloniaResource Include="..\..\assets\app.png" Link="Assets\app.png" />
+    <InternalsVisibleTo Include="Dapapa.App.Tests" />
+  </ItemGroup>
+</Project>

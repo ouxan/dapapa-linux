@@ -1,0 +1,15 @@
+post_install() {
+    echo '==> Start the helper:        sudo systemctl enable --now dapapa-helper.socket'
+    echo '==> Allow your user:         sudo usermod -aG dapapa "$USER"   (then log out and back in)'
+}
+
+post_upgrade() {
+    # A running helper keeps the old binaries; restarting it stops protection until the GUI reconnects.
+    if systemctl is-active --quiet dapapa-helper.service; then
+        echo '==> Restart the helper to use the new version: sudo systemctl restart dapapa-helper.service'
+    fi
+}
+
+pre_remove() {
+    systemctl disable --now dapapa-helper.socket dapapa-helper.service >/dev/null 2>&1 || true
+}

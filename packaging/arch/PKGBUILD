@@ -1,0 +1,48 @@
+# Maintainer: uxan
+# Built from this repository by packaging/arch/build.sh, which packs the current commit as the source archive.
+pkgname=dapapa
+pkgver=0.1.3
+pkgrel=1
+pkgdesc='Per-domain DPI circumvention and DNS over HTTPS without a VPN'
+arch=('x86_64')
+url='https://github.com/ouxan/dapapa-linux'
+license=('MIT')
+# The window uses X11 (XWayland on Hyprland) by default; wayland and libxkbcommon serve DAPAPA_WAYLAND=1 and sessions without X.
+depends=('dotnet-runtime>=10.0' 'nftables' 'libnetfilter_queue' 'iproute2' 'fontconfig' 'freetype2' 'libglvnd' 'hicolor-icon-theme'
+         'libx11' 'libxext' 'libxfixes' 'libxi' 'libxrandr' 'libxcursor' 'libice' 'libsm' 'wayland' 'libxkbcommon')
+optdepends=('opengl-driver: GPU rendering; without it the window is drawn by the CPU and can feel slow'
+            'xorg-xwayland: run the window through XWayland on a Wayland compositor such as Hyprland')
+makedepends=('dotnet-sdk>=10.0')
+install=dapapa.install
+options=('!strip' '!debug')
+source=("dapapa-linux-$pkgver.tar.gz")
+sha256sums=('SKIP')
+
+build() {
+    cd "dapapa-linux-$pkgver"
+    export DOTNET_CLI_TELEMETRY_OPTOUT=1 DOTNET_NOLOGO=1 AVALONIA_TELEMETRY_OPTOUT=1
+    for project in Dapapa.App Dapapa.Helper Dapapa.Cli; do
+        dotnet publish "src/$project/$project.csproj" -c Release -r linux-x64 --self-contained false \
+            -p:DebugType=None -p:DebugSymbols=false \
+            -p:PublishReadyToRun=true -o "$srcdir/out"
+    done
+}
+
+package() {
+    cd "dapapa-linux-$pkgver"
+    install -d "$pkgdir/usr/lib/dapapa" "$pkgdir/usr/bin"
+    cp -a "$srcdir/out/." "$pkgdir/usr/lib/dapapa/"
+    ln -s /usr/lib/dapapa/dapapa "$pkgdir/usr/bin/dapapa"
+    ln -s /usr/lib/dapapa/dapapactl "$pkgdir/usr/bin/dapapactl"
+    install -Dm644 packaging/cleanup.nft "$pkgdir/usr/lib/dapapa/cleanup.nft"
+    install -Dm644 packaging/systemd/dapapa-helper.service "$pkgdir/usr/lib/systemd/system/dapapa-helper.service"
+    install -Dm644 packaging/systemd/dapapa-helper.socket "$pkgdir/usr/lib/systemd/system/dapapa-helper.socket"
+    install -Dm644 packaging/sysusers/dapapa.conf "$pkgdir/usr/lib/sysusers.d/dapapa.conf"
+    install -Dm644 packaging/dapapa.desktop "$pkgdir/usr/share/applications/dapapa.desktop"
+    install -Dm644 assets/app.png "$pkgdir/usr/share/icons/hicolor/1024x1024/apps/dapapa.png"
+    install -Dm644 assets/app.png "$pkgdir/usr/share/pixmaps/dapapa.png"
+    install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+    install -Dm644 THIRD-PARTY-NOTICES.md "$pkgdir/usr/share/licenses/$pkgname/THIRD-PARTY-NOTICES.md"
+    install -Dm644 assets/AngleSharp-LICENSE.txt "$pkgdir/usr/share/licenses/$pkgname/AngleSharp-LICENSE.txt"
+    install -Dm644 assets/Selawik-LICENSE.txt "$pkgdir/usr/share/licenses/$pkgname/Selawik-LICENSE.txt"
+}

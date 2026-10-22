@@ -1,0 +1,504 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Buttons -->
+    <ControlTheme x:Key="AccentButton" TargetType="Button">
+        <Setter Property="Background" Value="{StaticResource AccentBrush}"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="Padding" Value="18,10"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="RenderTransform" Value="scale(1)"/>
+        <Setter Property="Transitions">
+            <Transitions>
+                <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.12"/>
+            </Transitions>
+        </Setter>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border Name="border" Background="{TemplateBinding Background}" CornerRadius="8"
+                        Padding="{TemplateBinding Padding}">
+                    <ContentPresenter Name="PART_ContentPresenter" Content="{TemplateBinding Content}"
+                                      ContentTemplate="{TemplateBinding ContentTemplate}"
+                                      HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                      VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+        <Style Selector="^:pointerover">
+            <Setter Property="RenderTransform" Value="scale(1.035)"/>
+        </Style>
+        <Style Selector="^:pointerover /template/ Border#border">
+            <Setter Property="Background" Value="{StaticResource AccentHoverBrush}"/>
+            <Setter Property="BoxShadow" Value="{StaticResource AccentGlow}"/>
+        </Style>
+        <Style Selector="^:pressed">
+            <Setter Property="RenderTransform" Value="scale(0.965)"/>
+        </Style>
+        <Style Selector="^:disabled /template/ Border#border">
+            <Setter Property="Opacity" Value="0.5"/>
+        </Style>
+    </ControlTheme>
+
+    <ControlTheme x:Key="DangerButton" TargetType="Button" BasedOn="{StaticResource AccentButton}">
+        <Setter Property="Background" Value="{StaticResource DangerBrush}"/>
+        <Style Selector="^:pointerover /template/ Border#border">
+            <Setter Property="Background" Value="#F04E51"/>
+            <Setter Property="BoxShadow" Value="{StaticResource DangerGlow}"/>
+        </Style>
+    </ControlTheme>
+
+    <ControlTheme x:Key="GhostButton" TargetType="Button">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="Padding" Value="14,7"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BorderBrush2}"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="RenderTransform" Value="scale(1)"/>
+        <Setter Property="Transitions">
+            <Transitions>
+                <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.12"/>
+            </Transitions>
+        </Setter>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border Name="border" Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="7" Padding="{TemplateBinding Padding}">
+                    <ContentPresenter Name="PART_ContentPresenter" Content="{TemplateBinding Content}"
+                                      ContentTemplate="{TemplateBinding ContentTemplate}"
+                                      HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                      VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+        <Style Selector="^:pointerover">
+            <Setter Property="RenderTransform" Value="scale(1.03)"/>
+        </Style>
+        <Style Selector="^:pointerover /template/ Border#border">
+            <Setter Property="Background" Value="{StaticResource BgCardBrush}"/>
+        </Style>
+        <Style Selector="^:pressed">
+            <Setter Property="RenderTransform" Value="scale(0.97)"/>
+        </Style>
+        <Style Selector="^:disabled /template/ Border#border">
+            <Setter Property="Opacity" Value="0.4"/>
+        </Style>
+    </ControlTheme>
+
+    <ControlTheme x:Key="TitleBarButton" TargetType="Button">
+        <Setter Property="Width" Value="32"/>
+        <Setter Property="Height" Value="32"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border Name="border" Background="{TemplateBinding Background}" CornerRadius="8">
+                    <ContentPresenter Name="PART_ContentPresenter" Content="{TemplateBinding Content}"
+                                      HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+        <Style Selector="^:pointerover /template/ Border#border">
+            <Setter Property="Background" Value="{StaticResource BgCardBrush}"/>
+        </Style>
+    </ControlTheme>
+
+    <ControlTheme x:Key="TitleBarCloseButton" TargetType="Button" BasedOn="{StaticResource TitleBarButton}">
+        <Style Selector="^:pointerover /template/ Border#border">
+            <Setter Property="Background" Value="{StaticResource DangerBrush}"/>
+        </Style>
+    </ControlTheme>
+
+    <!-- Check box with an animated tick -->
+    <ControlTheme x:Key="{x:Type CheckBox}" TargetType="CheckBox">
+        <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Grid ColumnDefinitions="Auto,*" Background="{TemplateBinding Background}">
+                    <Border Name="Box" Width="19" Height="19" CornerRadius="5" VerticalAlignment="Center"
+                            Background="{StaticResource BgCardBrush}" BorderBrush="{StaticResource BorderBrush2}"
+                            BorderThickness="1.5">
+                        <Border.Transitions>
+                            <Transitions>
+                                <BrushTransition Property="Background" Duration="0:0:0.12"/>
+                                <BrushTransition Property="BorderBrush" Duration="0:0:0.12"/>
+                            </Transitions>
+                        </Border.Transitions>
+                        <Path Name="CheckMark" Data="M 3.5,9.5 L 7.5,13.5 L 15,5" Stroke="White" StrokeThickness="2"
+                              StrokeLineCap="Round" StrokeJoin="Round" Width="13" Height="13" Stretch="Uniform"
+                              HorizontalAlignment="Center" VerticalAlignment="Center"
+                              Opacity="0" RenderTransform="scale(0.5)">
+                            <Path.Transitions>
+                                <Transitions>
+                                    <DoubleTransition Property="Opacity" Duration="0:0:0.12"/>
+                                    <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.18" Easing="BackEaseOut"/>
+                                </Transitions>
+                            </Path.Transitions>
+                        </Path>
+                    </Border>
+                    <ContentPresenter Name="PART_ContentPresenter" Grid.Column="1" Margin="10,0,0,0"
+                                      Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}"
+                                      VerticalAlignment="Center" HorizontalAlignment="Left"
+                                      IsVisible="{TemplateBinding Content, Converter={x:Static ObjectConverters.IsNotNull}}">
+                        <ContentPresenter.Styles>
+                            <Style Selector="TextBlock">
+                                <Setter Property="TextWrapping" Value="Wrap"/>
+                            </Style>
+                        </ContentPresenter.Styles>
+                    </ContentPresenter>
+                </Grid>
+            </ControlTemplate>
+        </Setter>
+        <Style Selector="^:pointerover /template/ Border#Box">
+            <Setter Property="BorderBrush" Value="{StaticResource AccentHoverBrush}"/>
+        </Style>
+        <Style Selector="^:checked /template/ Border#Box">
+            <Setter Property="Background" Value="{StaticResource AccentBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}"/>
+        </Style>
+        <Style Selector="^:checked /template/ Path#CheckMark">
+            <Setter Property="Opacity" Value="1"/>
+            <Setter Property="RenderTransform" Value="scale(1)"/>
+        </Style>
+        <Style Selector="^:disabled /template/ Border#Box">
+            <Setter Property="Opacity" Value="0.4"/>
+        </Style>
+        <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Opacity" Value="0.55"/>
+        </Style>
+    </ControlTheme>
+
+    <!-- On/off switch used for target groups -->
+    <ControlTheme x:Key="ToggleSwitch" TargetType="CheckBox">
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Panel Background="{TemplateBinding Background}">
+                    <Border Name="Track" Width="44" Height="24" CornerRadius="12" BorderThickness="1.2"
+                            Background="#2B2D3C" BorderBrush="{StaticResource BorderBrush2}">
+                        <Border.Transitions>
+                            <Transitions>
+                                <BrushTransition Property="Background" Duration="0:0:0.15"/>
+                                <BrushTransition Property="BorderBrush" Duration="0:0:0.15"/>
+                            </Transitions>
+                        </Border.Transitions>
+                        <Canvas Width="44" Height="24">
+                            <!-- Box shadow rather than a blur effect, which costs an offscreen layer per switch. -->
+                            <Border Name="Thumb" Width="16" Height="16" CornerRadius="8" Canvas.Left="3.5" Canvas.Top="2.8"
+                                    Background="#9BA0AE" BoxShadow="0 1 5 0 #66000000" RenderTransform="translateX(0px)">
+                                <Border.Transitions>
+                                    <Transitions>
+                                        <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.18" Easing="CubicEaseOut"/>
+                                    </Transitions>
+                                </Border.Transitions>
+                            </Border>
+                        </Canvas>
+                    </Border>
+                </Panel>
+            </ControlTemplate>
+        </Setter>
+        <Style Selector="^:pointerover /template/ Border#Track">
+            <Setter Property="BorderBrush" Value="{StaticResource AccentHoverBrush}"/>
+        </Style>
+        <Style Selector="^:checked /template/ Border#Track">
+            <Setter Property="Background" Value="{StaticResource AccentBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}"/>
+        </Style>
+        <Style Selector="^:checked /template/ Border#Thumb">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="RenderTransform" Value="translateX(21px)"/>
+        </Style>
+    </ControlTheme>
+
+    <ControlTheme x:Key="{x:Type RadioButton}" TargetType="RadioButton">
+        <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Grid ColumnDefinitions="Auto,*" Background="{TemplateBinding Background}">
+                    <Ellipse Name="Ring" Width="18" Height="18" Fill="{StaticResource BgCardBrush}"
+                             Stroke="{StaticResource BorderBrush2}" StrokeThickness="1.5" VerticalAlignment="Center"/>
+                    <Ellipse Name="Dot" Width="8" Height="8" Fill="{StaticResource AccentBrush}" Opacity="0"
+                             HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <Ellipse.Transitions>
+                            <Transitions>
+                                <DoubleTransition Property="Opacity" Duration="0:0:0.12"/>
+                            </Transitions>
+                        </Ellipse.Transitions>
+                    </Ellipse>
+                    <ContentPresenter Name="PART_ContentPresenter" Grid.Column="1" Margin="8,0,0,0"
+                                      Content="{TemplateBinding Content}" VerticalAlignment="Center"/>
+                </Grid>
+            </ControlTemplate>
+        </Setter>
+        <Style Selector="^:pointerover /template/ Ellipse#Ring">
+            <Setter Property="Stroke" Value="{StaticResource AccentHoverBrush}"/>
+        </Style>
+        <Style Selector="^:checked /template/ Ellipse#Ring">
+            <Setter Property="Stroke" Value="{StaticResource AccentBrush}"/>
+        </Style>
+        <Style Selector="^:checked /template/ Ellipse#Dot">
+            <Setter Property="Opacity" Value="1"/>
+        </Style>
+    </ControlTheme>
+
+    <!-- Round icon tabs -->
+    <ControlTheme x:Key="{x:Type TabControl}" TargetType="TabControl">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Padding" Value="0"/>
+        <Setter Property="ItemsPanel">
+            <ItemsPanelTemplate>
+                <StackPanel Orientation="Horizontal"/>
+            </ItemsPanelTemplate>
+        </Setter>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <DockPanel>
+                    <Border DockPanel.Dock="Top" Background="{StaticResource BgPanelBrush}" Padding="16,10,16,10">
+                        <ItemsPresenter Name="PART_ItemsPresenter" ItemsPanel="{TemplateBinding ItemsPanel}"
+                                        HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                    </Border>
+                    <ContentPresenter Name="PART_SelectedContentHost" Content="{TemplateBinding SelectedContent}"
+                                      ContentTemplate="{TemplateBinding SelectedContentTemplate}"/>
+                </DockPanel>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+
+    <ControlTheme x:Key="{x:Type TabItem}" TargetType="TabItem">
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Panel Name="root" Width="70" Height="48" Background="Transparent">
+                    <Panel.RenderTransform>
+                        <ScaleTransform/>
+                    </Panel.RenderTransform>
+                    <Ellipse Name="bd" Width="48" Height="48" Fill="{StaticResource BgCardBrush}"
+                             Stroke="{StaticResource BorderBrush2}" StrokeThickness="1"/>
+                    <ContentPresenter Name="PART_ContentPresenter" Content="{TemplateBinding Header}"
+                                      HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Panel>
+            </ControlTemplate>
+        </Setter>
+        <Style Selector="^:pointerover /template/ Ellipse#bd">
+            <Setter Property="Fill" Value="{StaticResource BorderBrush2}"/>
+        </Style>
+        <Style Selector="^:selected /template/ Ellipse#bd">
+            <Setter Property="Fill" Value="{StaticResource AccentBrush}"/>
+            <Setter Property="Stroke" Value="{StaticResource AccentBrush}"/>
+        </Style>
+        <Style Selector="^:selected /template/ Panel#root">
+            <Style.Animations>
+                <Animation Duration="0:0:0.18" Easing="BackEaseOut" FillMode="Forward">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="ScaleTransform.ScaleX" Value="0.9"/>
+                        <Setter Property="ScaleTransform.ScaleY" Value="0.9"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="ScaleTransform.ScaleX" Value="1"/>
+                        <Setter Property="ScaleTransform.ScaleY" Value="1"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+    </ControlTheme>
+
+    <!-- Combo box -->
+    <ControlTheme x:Key="{x:Type ComboBoxItem}" TargetType="ComboBoxItem">
+        <Setter Property="Padding" Value="10,6"/>
+        <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border Name="bd" Background="{TemplateBinding Background}" CornerRadius="5"
+                        Padding="{TemplateBinding Padding}" Margin="2,1">
+                    <ContentPresenter Name="PART_ContentPresenter" Content="{TemplateBinding Content}"
+                                      ContentTemplate="{TemplateBinding ContentTemplate}"/>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+        <Style Selector="^:pointerover /template/ Border#bd">
+            <Setter Property="Background" Value="{StaticResource AccentBrush}"/>
+        </Style>
+        <Style Selector="^:focus-visible /template/ Border#bd">
+            <Setter Property="Background" Value="{StaticResource AccentBrush}"/>
+        </Style>
+    </ControlTheme>
+
+    <ControlTheme x:Key="{x:Type ComboBox}" TargetType="ComboBox">
+        <Setter Property="Background" Value="{StaticResource BgCardBrush}"/>
+        <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BorderBrush2}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Padding" Value="10,7"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="MaxDropDownHeight" Value="320"/>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Panel>
+                    <Border Name="Background" Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="7">
+                        <Grid ColumnDefinitions="*,20">
+                            <ContentControl Name="ContentPresenter" Margin="{TemplateBinding Padding}"
+                                            Content="{TemplateBinding SelectionBoxItem}"
+                                            ContentTemplate="{TemplateBinding ItemTemplate}"
+                                            HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                            <Path Grid.Column="1" Data="M0,0 L4,4 L8,0" Stroke="{StaticResource TextMutedBrush}"
+                                  StrokeThickness="1.4" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Grid>
+                    </Border>
+                    <Popup Name="PART_Popup" IsOpen="{TemplateBinding IsDropDownOpen, Mode=TwoWay}"
+                           MinWidth="{Binding Bounds.Width, RelativeSource={RelativeSource TemplatedParent}}"
+                           MaxHeight="{TemplateBinding MaxDropDownHeight}" PlacementTarget="Background"
+                           Placement="Bottom" VerticalOffset="4" IsLightDismissEnabled="True" InheritsTransform="True">
+                        <Border Background="{StaticResource BgCardBrush}" BorderBrush="{StaticResource BorderBrush2}"
+                                BorderThickness="1" CornerRadius="8" Padding="3">
+                            <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                                <ItemsPresenter Name="PART_ItemsPresenter" ItemsPanel="{TemplateBinding ItemsPanel}"/>
+                            </ScrollViewer>
+                        </Border>
+                    </Popup>
+                </Panel>
+            </ControlTemplate>
+        </Setter>
+        <Style Selector="^:disabled">
+            <Setter Property="Opacity" Value="0.5"/>
+        </Style>
+    </ControlTheme>
+
+    <!-- Thin scroll bars with their own column, as in the Windows app -->
+    <ControlTheme x:Key="ScrollPageButton" TargetType="RepeatButton">
+        <Setter Property="Focusable" Value="False"/>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border Background="Transparent"/>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+
+    <ControlTheme x:Key="{x:Type ScrollBar}" TargetType="ScrollBar">
+        <Setter Property="AllowAutoHide" Value="False"/>
+        <Setter Property="Cursor" Value="Arrow"/>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Track Name="PART_Track" Minimum="{TemplateBinding Minimum}" Maximum="{TemplateBinding Maximum}"
+                       Value="{TemplateBinding Value, Mode=TwoWay}" ViewportSize="{TemplateBinding ViewportSize}"
+                       Orientation="{TemplateBinding Orientation}" IsDirectionReversed="True">
+                    <Track.DecreaseButton>
+                        <RepeatButton Name="PART_PageUpButton" Theme="{StaticResource ScrollPageButton}"/>
+                    </Track.DecreaseButton>
+                    <Track.IncreaseButton>
+                        <RepeatButton Name="PART_PageDownButton" Theme="{StaticResource ScrollPageButton}"/>
+                    </Track.IncreaseButton>
+                    <Thumb Name="thumb" MinHeight="20" MinWidth="8">
+                        <Thumb.Template>
+                            <ControlTemplate>
+                                <Border Background="{StaticResource TextMutedBrush}" CornerRadius="4" Margin="1"/>
+                            </ControlTemplate>
+                        </Thumb.Template>
+                    </Thumb>
+                </Track>
+            </ControlTemplate>
+        </Setter>
+        <Style Selector="^:vertical">
+            <Setter Property="Width" Value="8"/>
+        </Style>
+        <Style Selector="^:horizontal">
+            <Setter Property="Height" Value="8"/>
+        </Style>
+        <Style Selector="^:horizontal /template/ Track#PART_Track">
+            <Setter Property="IsDirectionReversed" Value="False"/>
+        </Style>
+        <Style Selector="^:horizontal /template/ Thumb#thumb">
+            <Setter Property="MinHeight" Value="8"/>
+            <Setter Property="MinWidth" Value="20"/>
+        </Style>
+    </ControlTheme>
+
+    <ControlTheme x:Key="{x:Type ScrollViewer}" TargetType="ScrollViewer">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Grid ColumnDefinitions="*,Auto" RowDefinitions="*,Auto">
+                    <ScrollContentPresenter Name="PART_ContentPresenter" Background="{TemplateBinding Background}"
+                                            Padding="{TemplateBinding Padding}" Content="{TemplateBinding Content}"
+                                            ContentTemplate="{TemplateBinding ContentTemplate}"/>
+                    <ScrollBar Name="PART_HorizontalScrollBar" Grid.Row="1" Orientation="Horizontal"/>
+                    <ScrollBar Name="PART_VerticalScrollBar" Grid.Column="1" Orientation="Vertical"/>
+                </Grid>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+
+    <ControlTheme x:Key="PlainListItem" TargetType="ListBoxItem">
+        <Setter Property="Padding" Value="0"/>
+        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <ContentPresenter Name="PART_ContentPresenter" Content="{TemplateBinding Content}"
+                                  ContentTemplate="{TemplateBinding ContentTemplate}"
+                                  HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"/>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+
+    <!-- Expander in the look of the Windows default: light round toggle with a dark chevron -->
+    <ControlTheme x:Key="{x:Type Expander}" TargetType="Expander">
+        <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="Template">
+            <ControlTemplate>
+                <StackPanel>
+                    <ToggleButton Name="ExpanderHeader" IsChecked="{TemplateBinding IsExpanded, Mode=TwoWay}"
+                                  Cursor="Hand" Background="Transparent" HorizontalAlignment="Left">
+                        <ToggleButton.Template>
+                            <ControlTemplate>
+                                <Grid ColumnDefinitions="Auto,*" Background="Transparent">
+                                    <Ellipse Width="19" Height="19" Fill="#F2F3F5" Stroke="#333333" StrokeThickness="1"
+                                             VerticalAlignment="Center"/>
+                                    <Path Name="Arrow" Data="M1,1.5 L4.5,5 L8,1.5" Stroke="#333333" StrokeThickness="2"
+                                          HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    <ContentPresenter Grid.Column="1" Margin="4,0,0,0" VerticalAlignment="Center"
+                                                      Content="{TemplateBinding Content}"/>
+                                </Grid>
+                            </ControlTemplate>
+                        </ToggleButton.Template>
+                        <ToggleButton.Styles>
+                            <Style Selector="ToggleButton:checked /template/ Path#Arrow">
+                                <Setter Property="RenderTransform" Value="rotate(180deg)"/>
+                            </Style>
+                            <Style Selector="ToggleButton:pointerover /template/ Ellipse">
+                                <Setter Property="Stroke" Value="{StaticResource AccentBrush}"/>
+                            </Style>
+                        </ToggleButton.Styles>
+                        <ContentPresenter Content="{TemplateBinding Header}" ContentTemplate="{TemplateBinding HeaderTemplate}"/>
+                    </ToggleButton>
+                    <ContentPresenter Name="PART_ContentPresenter" Content="{TemplateBinding Content}"
+                                      ContentTemplate="{TemplateBinding ContentTemplate}"
+                                      IsVisible="{TemplateBinding IsExpanded}"/>
+                </StackPanel>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+</ResourceDictionary>
